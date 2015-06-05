@@ -1,0 +1,19 @@
+<div class="panel panel-default facet_limit blacklight-Limiters">
+  <div class="collapse-toggle panel-heading" data-target="#facet-Limiters" data-toggle="collapse">
+    <h5 class="panel-title"><a href="#" data-no-turbolink="true">Search Options</a></h5>
+  </div>
+  <div id="facet-Limiters" class="panel-collapse facet-content collapse in" style="height: auto;">
+    <div class="panel-body">
+      <form class="form">
+        <ul class="facet-values list-unstyled">
+          <%- eds_info.fetch('AvailableSearchCriteria', {}).fetch('AvailableLimiters', []).select {|l| l['Type'] == 'select'}.each_with_index do |limiter, count| %>
+              <li style='font-size:small;'>
+                <%= show_limiter_checkbox limiter, count %>
+                <%= limiter['Label'] %>
+              </li>
+          <%- end %>
+        </ul>
+      </form>
+    </div>
+  </div>
+</div>

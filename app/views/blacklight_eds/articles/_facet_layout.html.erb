@@ -1,0 +1,10 @@
+<div class="panel panel-default facet_limit blacklight-<%= facet['Id'] %>">
+  <div class="collapse-toggle panel-heading collapsed" data-target="#facet-<%= facet['Id'] %>" data-toggle="collapse">
+    <h5 class="panel-title"><a href="#" data-no-turbolink="true"><%= facet['Label'] %></a></h5>
+  </div>
+  <div id="facet-<%= facet['Id'] %>" class="panel-collapse facet-content collapse">
+    <div class="panel-body">
+      <%= render 'facet_limit', facet: facet %>
+    </div>
+  </div>
+</div>

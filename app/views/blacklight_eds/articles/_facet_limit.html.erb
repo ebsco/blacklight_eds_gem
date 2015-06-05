@@ -1,0 +1,13 @@
+<ul class="facet-values list-unstyled">
+  <%- facet.fetch('AvailableFacetValues', []).each do |facetValue|%>
+      <li>
+        <span class="facet-label">
+          <a class="facet_select" href="<%=request.fullpath.split("?")[0] + "?" + generate_next_url + "&eds_action=" + CGI.escape(facetValue['AddAction'].to_s)%>">
+            <%=facetValue['Value'].to_s.titleize%>
+          </a>
+        </span>
+        <span class="facet-count">
+          <%=facetValue['Count'].to_s%>
+        </span>
+      </li>
+  <%- end %>

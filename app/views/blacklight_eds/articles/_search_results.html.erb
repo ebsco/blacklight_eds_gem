@@ -1,0 +1,14 @@
+<% unless has_search_parameters? %>
+    <p>Empty Search.</p>
+
+<% else %>
+
+    <% if has_records? @results %>
+        <div id="documents">
+          <% @results['SearchResult']['Data']['Records'].each do |result| %>
+              <%= render 'document', result: result %>
+
+          <% end %>
+        </div>
+    <% end %>
+<% end %>

@@ -1,0 +1,12 @@
+<% if show_total_pages > 1 %>
+ <div class="row record-padding">
+  <div class="col-md-9"> 
+    <div class="pagination">
+      <ul class="pagination">
+        <%= show_pagination %>
+        <%#= paginate @results, :total_pages => 15, :outer_window => 2, :theme => 'blacklight' %>
+      </ul>
+    </div>
+  </div>
+ </div>
+<% end %>

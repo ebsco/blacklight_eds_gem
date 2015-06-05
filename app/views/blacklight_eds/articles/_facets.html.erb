@@ -1,0 +1,24 @@
+<% if has_eds_facets? %>
+  <div id="facets" class="facets sidenav">
+    <div class="top-panel-heading panel-heading">
+      <h4 data-toggle="collapse" data-target=".facets-collapse">
+
+        <a class="btn btn-navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <%= t('blacklight.search.facets.title') %>
+
+      </h4>
+    </div>
+    <div id="facet-panel-collapse" class="collapse panel-group">
+      <%= render 'facet_limiters' %>
+      <%= render 'facet_date' %>
+      <%- @results.fetch('SearchResult', {}).fetch('AvailableFacets', []).each do |facet| %>
+        <%= render 'facet_layout', facet: facet %>
+      <%- end %>
+    </div>
+  </div>
+
+    &nbsp;
+<% end %>

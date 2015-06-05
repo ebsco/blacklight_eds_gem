@@ -1,0 +1,12 @@
+<span class="btn-group appliedFilter constraint filter <%= options[:class] %>">
+  <a class="constraint-value btn btn-sm btn-default btn-disabled" href="<%= eds_action_url options[:remove_action] %>">
+    <%- if options.has_key? :filter_name %>
+        <span class="filterName"><%= options[:filter_name] %></span>
+    <%- end %>
+    <span class="filterValue"><%= options[:filter_value] %></span>
+  </a>
+  <a class="btn btn-default btn-sm remove dropdown-toggle" href="<%= eds_action_url options[:remove_action] %>">
+    <span class="glyphicon glyphicon-remove"></span>
+    <span class="sr-only">Remove filter <%= options[:filter_name] + ':' if options.has_key? :filter_name %> <%= options[:filter_value]%></span>
+  </a>
+</span>
