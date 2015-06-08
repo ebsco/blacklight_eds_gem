@@ -4,7 +4,7 @@ require_dependency "blacklight_eds/application_controller"
 class BlacklightEds::ArticlesController < BlacklightEds::ApplicationController
   include Blacklight::Catalog::SearchContext
 
-  before_filter :eds_connect
+  before_filter { eds_connect params[:eds_profile] }
 
   def index
     api_query = generate_api_query params

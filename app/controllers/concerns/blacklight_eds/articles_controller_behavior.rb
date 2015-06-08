@@ -34,23 +34,30 @@ module BlacklightEds::ArticlesControllerBehavior
   # API Interaction
   ###########
 
-  def eds_connect
-    connection = eds_connection
+  def eds_connect profile=nil
+    connection = eds_connection profile
   end
 
   # Returns the connection object when called
-  def eds_connection
+  def eds_connection profile=nil
     unless @connection
       # creates EDS API connection object, initializing it with application login credentials
       connection = EDSApi::ConnectionHandler.new(2)
-
-      yaml_file = File.join(Rails.root, 'config', 'eds.yml')
-      config = config = YAML.load_file(yaml_file)[Rails.env]
+      profile = eds_profile profile
       is_user = current_user ? 'y' : 'n'
-      connection.uid_init(config['username'], config['password'], config['profile'], is_user)
+      connection.uid_init(profile['username'], profile['password'], profile['profile'], is_user)
       @connection = connection
     end
     @connection
+  end
+
+  # Returns a profile. If the profile param is null, return the first profile
+  def eds_profile profile=nil
+    profiles = Rails.cache.fetch('eds_profiles') do
+      yaml_file = File.join(Rails.root, 'config', 'eds.yml')
+      YAML.load_file(yaml_file)[Rails.env]
+    end
+    profiles.fetch(profile, profiles.values[0])
   end
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
