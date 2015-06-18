@@ -610,19 +610,19 @@ module BlacklightEds::BlacklightEdsHelper
     return new_link
   end
 
-  def show_pdf_link(record)
-    record.fetch('FullText', {}).fetch('Links', []).select { |link|
+  def show_pdf_link(result)
+    result.fetch('FullText', {}).fetch('Links', []).select { |link|
       link['Type'] == 'pdflink'
-    }.collect { |link| link['Url'] }.join
+    }.fetch('Url', '')
   end
 
-  def show_smartlink(record)
+  def show_smartlink(result)
     result.fetch('FullText', {}).fetch('Links', []).select { |link|
       link['Type'] == 'other'
     }.map { |link| link['Url'] }.join
   end
 
-  def show_ebook_link(record)
+  def show_ebook_link(result)
     result.fetch('FullText', {}).fetch('Links', []).select { |link|
       link['Type'] == 'ebook-pdf' or link['Type'] == 'ebook-epub'
     }.map { |link| link['Url'] }.join
@@ -695,4 +695,5 @@ module BlacklightEds::BlacklightEdsHelper
   def has_records? results
     not results.nil? and results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).count > 0
   end
+
 end

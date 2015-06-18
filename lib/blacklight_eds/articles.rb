@@ -39,6 +39,19 @@ module BlacklightEds::Articles
     end
   end
 
+  def fulltext
+    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]))
+    if recordArray['Record'].present?
+      record = recordArray['Record']
+    end
+    fulltext_links = eds_fulltext_links(record, params[:fulltext_type])
+    if fulltext_links.empty?
+      flash.now[:error] = 'Full text not found for this item'
+    else
+      redirect_to eds_fulltext_links(record, params[:fulltext_type])[0]['Url']
+    end
+  end
+
   def switch
     # check to see if the user is navigating to a record that was not included in the current page of results
     # if so, run a new search API call, getting the appropriate page of results

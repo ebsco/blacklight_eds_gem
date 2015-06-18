@@ -2,7 +2,7 @@ module BlacklightEds::ArticlesControllerBehavior
   extend ActiveSupport::Concern
 
   included do
-    helper_method :eds_num_limiters, :eds_info
+    helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links
   end
 
   def html_unescape(text)
@@ -253,7 +253,7 @@ module BlacklightEds::ArticlesControllerBehavior
   #discards pagenumber, facets and filters, actions, etc.
   def show_hidden_field_tags
     hidden_fields = "";
-    params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an) do |key, value|
+    params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an, :fulltext_type) do |key, value|
       if key == :eds_action
         if value =~ /addlimiter/ or value =~ /removelimiter/ or value =~ /setsort/ or value =~ /SetResultsPerPage/
           hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
@@ -269,6 +269,11 @@ module BlacklightEds::ArticlesControllerBehavior
     hidden_fields.html_safe
   end
 
+  def eds_fulltext_links(result, types)
+    result.fetch('FullText', {}).fetch('Links', []).select { |link|
+      types.include? link['Type']
+    }
+  end
 
   ################
   # Debug Functions

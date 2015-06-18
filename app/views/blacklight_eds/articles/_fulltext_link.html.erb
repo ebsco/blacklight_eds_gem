@@ -1,0 +1,5 @@
+<%- if params[:action] == 'show' %>
+    <%= link_to label, link['Url'] %>
+<%- else %>
+    <%= link_to label, eds_fulltext_path(show_dbid(record), show_an(record), link['Type']) %>
+<%- end %>

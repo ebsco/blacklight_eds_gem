@@ -1,0 +1,5 @@
+<%- if params[:action] == 'show' %>
+    <%= link_to 'HTML Full Text', '#fulltext' %>
+<%- else %>
+    <%= link_to 'HTML Full Text', show_detail_link(record, show_resultid(record), params[:q]) + '#fulltext' %>
+<%- end %>
