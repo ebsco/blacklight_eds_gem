@@ -1,0 +1,27 @@
+<%- if has_any_fulltext? record %>
+    <dt class="blacklight-fulltext">Full-Text Options:</dt>
+    <dd class="blacklight-fulltext">
+      <%- if has_pdf?(record) %>
+          <%= link_to "PDF Full Text", show_pdf_link(record) %>
+          <%= delimiter %>
+      <%- end %>
+      <%- if has_html?(record) %>
+          <%= link_to "HTML Full Text", "#fulltext" %>
+          <%= delimiter %>
+      <%- end %>
+      <%- if has_smartlink?(record) %>
+          <%= link_to "Linked Full Text", show_smartlink(record) %>
+          <%= delimiter %>
+      <%- end %>
+      <%- if has_ebook?(record) %>
+          <%= link_to "eBook Full Text", show_ebook_link(record) %>
+          <%= delimiter %>
+      <%- end %>
+      <%- if has_fulltext?(record) %>
+          <%= show_best_fulltext_link_detail(record) %>
+      <%- end %>
+    </dd>
+<%- elsif has_ill? record %>
+    <dt class="blacklight-ill">Interlibrary Loan:</dt>
+    <dd class="blacklight-ill"><%= show_ill(record) %></dd>
+<%- end %>

@@ -1,4 +1,12 @@
 <% # container for all documents in index view -%>
-<div id="documents">
-  <%= render documents, :as => :document %>
-</div>
+<%- if has_search_parameters? %>
+    <%- if has_records? @results %>
+        <div id="documents">
+          <% @results['SearchResult']['Data']['Records'].each do |result| %>
+              <%= render 'document', result: result %>
+          <% end %>
+        </div>
+    <%- end %>
+<%- else %>
+    <p>Empty Search.</p>
+<%- end %>

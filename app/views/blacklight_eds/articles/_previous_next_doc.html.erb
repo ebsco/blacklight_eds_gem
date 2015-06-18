@@ -18,7 +18,7 @@
         <%= link_to "Back to Search Results", request.fullpath.split("/" + params[:dbid])[0] + "?" + generate_next_url + "&fromDetail=y" %>
         |
     <% end %>
-    <%= link_to 'New Search', articles_path %>
+    <%= link_to 'New Search', search_action_url %>
   </div>
 </div>
 

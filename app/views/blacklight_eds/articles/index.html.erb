@@ -1,4 +1,4 @@
-<%
+<%#
 ##
 # Copyright 2013 EBSCO Information Services
 #
@@ -14,8 +14,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 %>
-
-<% session[:current_url] = request.original_url %>
 
 <script type="text/javascript">
   function htmlDecode(input){
@@ -38,12 +36,9 @@
 
 
 <div id="sidebar" class="col-md-3">
- <%= render :partial=>'search_links' %>
-
- <% if has_search_parameters? %>
-
- <%= render :partial=>'facets' %>
-<% end %>
+  <%- if has_search_parameters? %>
+      <%= render :partial=>'facets' %>
+  <%- end %>
 </div><!--/well -->
 
 <div id="content" class="col-md-9">
@@ -59,7 +54,7 @@
       <h2>Search Results</h2>
       <%= render :partial=>'constraints' %>
       <%= render :partial=>'sort_and_per_page' %>
-      <%= render :partial=>'search_results' %>
+      <%= render :partial=>'document_list' %>
       <%= render :partial=>'results_pagination' %>
     <% end %>
 

@@ -44,25 +44,26 @@ module BlacklightEds::ArticlesControllerBehavior
       # creates EDS API connection object, initializing it with application login credentials
       connection = EDSApi::ConnectionHandler.new(2)
       profile = eds_profile profile
-      is_user = current_user ? 'y' : 'n'
-      connection.uid_init(profile['username'], profile['password'], profile['profile'], is_user)
+      is_guest = current_user ? 'n' : 'y'
+      connection.uid_init(profile['username'], profile['password'], profile['profile'], is_guest)
       @connection = connection
     end
+    @connection.uid_authenticate :json
+    @connection.show_auth_token
     @connection
   end
 
   # Returns a profile. If the profile param is null, return the first profile
   def eds_profile profile=nil
-    profiles = Rails.cache.fetch('eds_profiles') do
-      yaml_file = File.join(Rails.root, 'config', 'eds.yml')
-      YAML.load_file(yaml_file)[Rails.env]
-    end
+    profiles = Blacklight5::Application.config.eds_profiles
     profiles.fetch(profile, profiles.values[0])
+    #profiles.values[0]
   end
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
-    Rails.cache.fetch('eds_auth_token', expires_in: 30.minutes) do
+    cache_key = current_user ? 'eds_auth_token/user' : 'guest_auth_token/guest'
+    Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
     end
@@ -93,12 +94,6 @@ module BlacklightEds::ArticlesControllerBehavior
   # options is usually the params hash
   # this function strips out unneeded parameters and reformats them to form a string that the API accepts as input
   def generate_api_query(options)
-
-    #removing Rails and Blacklight parameters
-    options.delete("action")
-    options.delete("controller")
-    options.delete("utf8")
-
     #translate Blacklight search_field into query index
     if options["search_field"].present?
       if options["search_field"] == "author"
@@ -123,7 +118,7 @@ module BlacklightEds::ArticlesControllerBehavior
     #filter to make sure the only parameters put into the API query are those that are expected by the API
     edsKeys = ["eds_action", "q", "query-1", "facetfilter[]", "facetfilter", "sort", "includefacets", "searchmode", "view", "resultsperpage", "sort", "pagenumber", "highlight", "limiter", "limiter[]"]
     edsSubset = {}
-    options.each do |key, value|
+    options.except(:action, :controller, :utf8).each do |key, value|
       if edsKeys.include?(key)
         edsSubset[key] = value
       end
@@ -253,28 +248,25 @@ module BlacklightEds::ArticlesControllerBehavior
   # Linking Utilities
   ############
 
-
   #for the search form at the top of results
   #retains some of current search's fields (limiters)
   #discards pagenumber, facets and filters, actions, etc.
   def show_hidden_field_tags
     hidden_fields = "";
-    params.each do |key, value|
-      unless ((key == "search_field") or (key == "fromDetail") or (key == "facetfilter") or (key == "pagenumber") or (key == "q") or (key == "dbid") or (key == "an"))
-        if (key == "eds_action")
-          if ((value.scan(/addlimiter/).length > 0) or (value.scan(/removelimiter/).length > 0) or (value.scan(/setsort/).length > 0) or (value.scan(/SetResultsPerPage/).length > 0))
-            hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
-          end
-        elsif value.kind_of?(Array)
-          value.each do |arrayVal|
-            hidden_fields << '<input type="hidden" name="' << key.to_s << '[]" value="' << arrayVal.to_s << '" />'
-          end
-        else
+    params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an) do |key, value|
+      if key == :eds_action
+        if value =~ /addlimiter/ or value =~ /removelimiter/ or value =~ /setsort/ or value =~ /SetResultsPerPage/
           hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
         end
+      elsif value.kind_of?(Array)
+        value.each do |v|
+          hidden_fields << '<input type="hidden" name="' << key.to_s << '[]" value="' << v.to_s << '" />'
+        end
+      else
+        hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
       end
     end
-    return hidden_fields.html_safe
+    hidden_fields.html_safe
   end
 
 
@@ -305,7 +297,7 @@ module BlacklightEds::ArticlesControllerBehavior
     eds_session[:results] = results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).map { |r|
       { an: r.fetch('Header', {}).fetch('An', nil), dbid: r.fetch('Header', {}).fetch('DbId', nil) }
     }
-    eds_session[:query_string] = results['SearchRequestGet']['QueryString']
-    eds_session[:total_hits] = results['SearchResult']['Statistics']['TotalHits']
+    eds_session[:query_string] = results.fetch('SearchRequestGet', {}).fetch('QueryString', nil)
+    eds_session[:total_hits] = results.fetch('SearchResult', {}).fetch('Statistics', {}).fetch('TotalHits', -1)
   end
 end

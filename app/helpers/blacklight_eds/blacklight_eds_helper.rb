@@ -42,9 +42,8 @@ module BlacklightEds::BlacklightEdsHelper
 
   # Returns URL with appened eds_action
   def eds_action_url eds_action
-    articles_url + '?' + generate_next_url + '&eds_action=' + eds_action
+    search_action_url + '?' + generate_next_url + '&eds_action=' + eds_action
   end
-
 
   #############
   # Facets / Limiters sidebar
@@ -221,11 +220,11 @@ module BlacklightEds::BlacklightEdsHelper
     page_info = "<strong>" + first_result_on_page_num.to_s + "</strong> - <strong>" + last_result_on_page_num.to_s + "</strong> of <strong>" + show_total_hits.to_s + "</strong>"
     if show_current_page > 1
       previous_page = show_current_page - 1
-      previous_link = '<a href="' + request.fullpath.split("?")[0] + "?" + generate_next_url + "&eds_action=GoToPage(" + previous_page.to_s + ')">&laquo; Previous</a> | '
+      previous_link = '<a href="' + eds_action_url("GoToPage(#{previous_page.to_s})") + '">&laquo; Previous</a> | '
     end
     if (show_current_page * show_results_per_page) < show_total_hits
       next_page = show_current_page + 1
-      next_link = ' | <a href="' + request.fullpath.split("?")[0] + "?" + generate_next_url + "&eds_action=GoToPage(" + next_page.to_s + ')">Next &raquo;</a>'
+      next_link = ' | <a href="' + eds_action_url("GoToPage(#{next_page.to_s})") + '">Next &raquo;</a>'
     end
     compact_pagination = previous_link + page_info + next_link
     return compact_pagination.html_safe
@@ -482,11 +481,11 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def has_full_text_on_screen?(result)
-    result.fetch('FullText', {}).fetch('Text', {}).fetch('Availability', '0') == 1
+    result.fetch('FullText', {}).fetch('Text', {}).fetch('Availability', '0') == '1'
   end
 
   def show_full_text_on_screen(result)
-    HTMLEntities.new.decode(result['FullText']['Text']['Value']) if has_full_text_on_screen?
+    HTMLEntities.new.decode(result['FullText']['Text']['Value']) if has_full_text_on_screen? result
   end
 
   ################
@@ -581,7 +580,7 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def show_plink(result)
-    result.fetch('Plink', '')
+    result.fetch('PLink', '')
   end
 
   def show_pdf_title_link(result)
@@ -612,7 +611,7 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def show_pdf_link(record)
-    result.fetch('FullText', {}).fetch('Links', []).select { |link|
+    record.fetch('FullText', {}).fetch('Links', []).select { |link|
       link['Type'] == 'pdflink'
     }.collect { |link| link['Url'] }.join
   end

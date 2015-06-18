@@ -15,10 +15,6 @@ module BlacklightEds
       end
     end
 
-    def search_action_url(*args)
-      articles_url *args
-    end
-
     private
 
     def main_app_url_helper?(method)

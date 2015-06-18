@@ -1,4 +1,4 @@
-    <%= form_tag "/articles", :method => :get, :class => 'search-query-form form-inline clearfix navbar-form' do %>
+    <%= form_tag search_action_url, :method => :get, :class => 'search-query-form form-inline clearfix navbar-form' do %>
       <div style="margin:0;padding:0;display:inline;"><%= show_hidden_field_tags %></div>
       <div class="input-group">
         <span class="input-group-addon">

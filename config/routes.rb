@@ -1,9 +1,9 @@
 BlacklightEds::Engine.routes.draw do
   # EDS
-  get 'articles', to: 'articles#index'
-  get 'articles/:dbid/:an', to: 'articles#detail', :constraints  => { :an => /[^\/]+/ }, as: 'eds_detail'
-  get 'articles/:dbid/:an/fulltext' => 'articles#fulltext', :constraints  => { :an => /[^\/]+/ }
-  get 'articles/switch/' => 'articles#switch'
+  get 'articles', to: 'articles#index', as: :eds_articles
+  get 'articles/:dbid/:an', to: 'articles#show', :constraints  => { :an => /[^\/]+/ }, as: :eds_detail
+  get 'articles/:dbid/:an/fulltext', to: 'articles#fulltext', :constraints  => { :an => /[^\/]+/ }, as: :eds_fulltext
+  get 'articles/switch/', to: 'articles#switch', as: :eds_switch
 end
 
 

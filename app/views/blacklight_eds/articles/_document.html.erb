@@ -1,4 +1,3 @@
-
 <div class="document blacklight-<%= show_pubtypeid(result) %>">
   <div class="record-image">
     <% if has_coverimage?(result) %>
@@ -49,25 +48,7 @@
             <dd class="blacklight-abstract"><%= show_subjects(result) %></dd>
         <% end %>
 
-        <% if has_any_fulltext?(result) %>
-            <dt class="blacklight-fulltext">Full-Text:</dt>
-            <dd class="blacklight-fulltext">
-              <% if has_pdf?(result) %>
-                  <%= link_to "PDF Full Text", show_pdf_title_link(result) %>
-              <% elsif has_html?(result) %>
-                  <%= link_to "HTML Full Text", show_best_fulltext_link(result), :target => "_blank" %>
-              <% elsif has_smartlink?(result) %>
-                  <%= link_to "Linked Full Text", show_smartlink_title_link(result) %>
-              <% elsif has_ebook?(result) %>
-                  <%= link_to "eBook Full Text", show_ebook_title_link(result) %>
-              <% else %>
-                  <%= show_best_fulltext_link_detail(result) %>
-              <% end %>
-            </dd>
-        <% elsif has_ill?(result) %>
-            <dt class="blacklight-ill">Full-Text:</dt>
-            <dd class="blacklight-ill"><%= show_ill(result) %></dd>
-        <% end %>
+        <%= render partial: 'fulltext_links', locals: { delimiter: ', ', record: result } %>
 
       </dl>
   <% else %>
