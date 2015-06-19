@@ -7,10 +7,6 @@ module BlacklightEds::Articles
   def index
     api_query = generate_api_query params
 
-    # not necessary to clean params for rails 4
-    #clean_params = deep_clean params
-    #params = clean_params
-
     if has_search_parameters?
       @results = eds_search api_query
       update_results_in_session @results
@@ -21,10 +17,6 @@ module BlacklightEds::Articles
 
   def show
     recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]))
-
-    # not necessary to clean params for rails 4
-    #clean_params = deep_clean(params)
-    #params = clean_params
 
     if not eds_session.has_key? :results and eds_session.has_key? :api_query
       @results = eds_search eds_session[:api_query]

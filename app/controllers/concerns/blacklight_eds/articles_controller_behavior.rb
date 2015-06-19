@@ -9,27 +9,6 @@ module BlacklightEds::ArticlesControllerBehavior
     return CGI.unescape(text)
   end
 
-  def deep_clean(parameters)
-    tempArray = Array.new;
-    parameters.each do |k, v|
-      unless v.nil?
-        if v.is_a?(Array)
-          deeperClean = deep_clean(v)
-          parameters[k] = deeperClean
-        else
-          parameters[k] = v
-        end
-      else
-        clean_key = k
-        tempArray.push(clean_key)
-      end
-    end
-    unless tempArray.empty?
-      parameters = tempArray
-    end
-    return parameters
-  end
-
   ###########
   # API Interaction
   ###########
@@ -57,7 +36,6 @@ module BlacklightEds::ArticlesControllerBehavior
   def eds_profile profile=nil
     profiles = Blacklight5::Application.config.eds_profiles
     profiles.fetch(profile, profiles.values[0])
-    #profiles.values[0]
   end
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
