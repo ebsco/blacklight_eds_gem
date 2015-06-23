@@ -62,6 +62,7 @@ module BlacklightEds::ArticlesControllerBehavior
         eds_session[:session_key] = eds_connection.create_session eds_auth_token
       end
     end
+    eds_session[:session_key] ||= eds_connection.create_session eds_auth_token
     logger.tagged('EDS') {
       logger.debug 'eds session_key: ' << eds_session[:session_key]
     }
