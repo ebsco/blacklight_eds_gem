@@ -21,6 +21,7 @@ module BlacklightEds::ArticlesControllerBehavior
       is_guest = current_user ? 'n' : 'y'
       connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
       Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
+      eds_session.delete :session_key
       eds_session[:profile] = profile
       eds_session[:connection] = connection
     end
