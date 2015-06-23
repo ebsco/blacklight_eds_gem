@@ -13,23 +13,22 @@ module BlacklightEds::ArticlesControllerBehavior
   # API Interaction
   ###########
 
-  def eds_connect profile=nil
-    connection = eds_connection profile
+  def eds_connect profile='default'
+    unless eds_session[:connection] and eds_session[:profile] == profile
+      # creates EDS API connection object, initializing it with application login credentials
+      connection = EDSApi::ConnectionHandler.new(2)
+      account = eds_profile profile
+      is_guest = current_user ? 'n' : 'y'
+      connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
+      Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
+      eds_session[:profile] = profile
+      eds_session[:connection] = connection
+    end
   end
 
   # Returns the connection object when called
-  def eds_connection profile=nil
-    unless @connection
-      # creates EDS API connection object, initializing it with application login credentials
-      connection = EDSApi::ConnectionHandler.new(2)
-      profile = eds_profile profile
-      is_guest = current_user ? 'n' : 'y'
-      connection.uid_init(profile['username'], profile['password'], profile['profile'], is_guest)
-      @connection = connection
-    end
-    @connection.uid_authenticate :json
-    @connection.show_auth_token
-    @connection
+  def eds_connection
+    eds_session[:connection]
   end
 
   # Returns a profile. If the profile param is null, return the first profile
@@ -41,14 +40,32 @@ module BlacklightEds::ArticlesControllerBehavior
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
     cache_key = current_user ? 'eds_auth_token/user' : 'guest_auth_token/guest'
-    Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
+    auth_token = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
     end
+    logger.tagged('EDS') {
+      logger.debug 'eds auth token: ' << auth_token
+    }
+    auth_token
   end
 
   def eds_session_key
-    eds_session[:session_key] ||= eds_connection.show_session_token
+    if current_user
+      if eds_session[:user] != current_user.id
+        eds_session[:user] = current_user.id
+        eds_session[:session_key] = @connection.create_session eds_auth_token
+      end
+    else
+      if eds_session[:user] != 'guest'
+        eds_session[:user] = 'guest'
+        eds_session[:session_key] = @connection.create_session eds_auth_token
+      end
+    end
+    logger.tagged('EDS') {
+      logger.debug 'eds session_key: ' << eds_session[:session_key]
+    }
+    eds_session[:session_key]
   end
 
   def eds_info

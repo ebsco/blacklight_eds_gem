@@ -11,7 +11,6 @@ module BlacklightEds::Articles
       @results = eds_search api_query
       update_results_in_session @results
       eds_session[:api_query] = api_query
-      puts eds_session[:results]
     end
   end
 
