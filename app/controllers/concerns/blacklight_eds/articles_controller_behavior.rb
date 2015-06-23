@@ -54,12 +54,12 @@ module BlacklightEds::ArticlesControllerBehavior
     if current_user
       if eds_session[:user] != current_user.id
         eds_session[:user] = current_user.id
-        eds_session[:session_key] = @connection.create_session eds_auth_token
+        eds_session[:session_key] = eds_connection.create_session eds_auth_token
       end
     else
       if eds_session[:user] != 'guest'
         eds_session[:user] = 'guest'
-        eds_session[:session_key] = @connection.create_session eds_auth_token
+        eds_session[:session_key] = eds_connection.create_session eds_auth_token
       end
     end
     logger.tagged('EDS') {
