@@ -39,7 +39,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
-    cache_key = current_user ? 'eds_auth_token/user' : 'guest_auth_token/guest'
+    cache_key = current_user ? 'eds_auth_token/user' : 'eds_auth_token/guest'
     auth_token = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
