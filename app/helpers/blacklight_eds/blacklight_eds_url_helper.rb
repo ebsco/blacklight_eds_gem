@@ -1,0 +1,3 @@
+module BlacklightEds::BlacklightEdsUrlHelper
+  
+end

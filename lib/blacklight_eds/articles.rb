@@ -78,12 +78,4 @@ module BlacklightEds::Articles
     redirect_to path_for_eds_article dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight
   end
 
-  def search_action_url(*args)
-    eds_articles_url *args
-  end
-
-  def path_for_eds_article(*args)
-    eds_detail_path *args
-  end
-
 end

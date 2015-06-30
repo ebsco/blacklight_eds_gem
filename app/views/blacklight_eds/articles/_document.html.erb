@@ -11,8 +11,9 @@
         <h5 class="index_title"><%= show_resultid(result) %>. This result cannot be shown to
           guests.  <%= link_to "Please log in to see this result.", new_user_session_path %></h5>
     <% else %>
-        <h5 class="index_title"><%= show_resultid(result) %>
-          . <%= link_to show_title(result), show_detail_link(result, show_resultid(result), params[:q]) %></h5>
+        <h5 class="index_title"><%= show_resultid(result) %>.
+          <%= link_to show_title(result), path_for_eds_article(dbid: show_dbid(result), an: show_an(result), resultId: show_resultid(result), hightlight: show_resultid(result)) %>
+        </h5>
     <% end %>
     <%# bookmark functions for items/docs %>
     <%# render_index_doc_actions document, :wrapping_class => "documentFunctions span2" %>

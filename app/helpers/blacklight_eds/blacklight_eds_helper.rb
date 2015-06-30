@@ -536,7 +536,7 @@ module BlacklightEds::BlacklightEdsHelper
     if has_pdf?(result)
       return show_pdf_title_link(result)
     elsif has_html?(result)
-      return show_detail_link(result)
+      return path_for_eds_article dbid: show_dbid(result), an: show_an(result), resultId: show_resultid(result), highlight: params[:q]
     elsif has_smartlink?(result)
       return show_smartlink_title_link(result)
     elsif has_fulltext?(result)

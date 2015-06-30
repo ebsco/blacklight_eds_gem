@@ -6,6 +6,7 @@ class BlacklightEds::ArticlesController < BlacklightEds::ApplicationController
   include Blacklight::Catalog::SearchContext
 
   helper_method :search_action_url
+  helper_method :path_for_eds_article
 
   before_filter { eds_connect params[:eds_profile] }
 
