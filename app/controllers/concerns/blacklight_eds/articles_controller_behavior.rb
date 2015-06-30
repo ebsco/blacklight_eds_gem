@@ -14,7 +14,7 @@ module BlacklightEds::ArticlesControllerBehavior
   ###########
 
   def eds_connect profile='default'
-    unless eds_session[:connection] and eds_session[:profile] == profile
+    unless session[:eds_connection] and eds_session[:profile] == profile
       # creates EDS API connection object, initializing it with application login credentials
       connection = EDSApi::ConnectionHandler.new(2)
       account = eds_profile profile
@@ -23,13 +23,13 @@ module BlacklightEds::ArticlesControllerBehavior
       Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
       eds_session.delete :session_key
       eds_session[:profile] = profile
-      eds_session[:connection] = connection
+      session[:eds_connection] = connection
     end
   end
 
   # Returns the connection object when called
   def eds_connection
-    eds_session[:connection]
+    session[:eds_connection]
   end
 
   # Returns a profile. If the profile param is null, return the first profile
@@ -111,6 +111,15 @@ module BlacklightEds::ArticlesControllerBehavior
 
     #build 'query-1' API URL parameter
     searchquery_extras = searchmode + "," + fieldcode
+
+    unless options.has_key? 'resultsperpage'
+      # set number of results per page using the blacklight_config if available
+      if blacklight_config.present? and blacklight_config.has_key? :default_solr_params
+        if blacklight_config[:default_solr_params].has_key? :rows
+          options['resultsperpage'] = blacklight_config[:default_solr_params][:rows]
+        end
+      end
+    end
 
     #filter to make sure the only parameters put into the API query are those that are expected by the API
     edsKeys = ["eds_action", "q", "query-1", "facetfilter[]", "facetfilter", "sort", "includefacets", "searchmode", "view", "resultsperpage", "sort", "pagenumber", "highlight", "limiter", "limiter[]"]
