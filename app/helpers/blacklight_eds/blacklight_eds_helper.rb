@@ -230,6 +230,16 @@ module BlacklightEds::BlacklightEdsHelper
     return compact_pagination.html_safe
   end
 
+  def eds_page_entries_info
+    first_result_on_page_num = ((show_current_page - 1) * show_results_per_page) + 1
+    last_result_on_page_num = first_result_on_page_num + show_results_per_page - 1
+    if last_result_on_page_num > show_total_hits
+      last_result_on_page_num = show_total_hits
+    end
+    "<strong>" + first_result_on_page_num.to_s + "</strong> - <strong>" + last_result_on_page_num.to_s + "</strong> of <strong>" + show_total_hits.to_s + "</strong>"
+
+  end
+
   #bottom pagination.  commented out lines remove 'last page' link, as this is not currently supported by the API
   def show_pagination
     previous_link = ''
