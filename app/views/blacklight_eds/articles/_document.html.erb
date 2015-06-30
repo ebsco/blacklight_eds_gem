@@ -48,7 +48,7 @@
             <dd class="blacklight-abstract"><%= show_subjects(result) %></dd>
         <% end %>
 
-        <%= render partial: 'fulltext_links', locals: { delimiter: ' ', record: result } %>
+        <%= render partial: 'blacklight_eds/articles/fulltext_links', locals: { delimiter: ' ', record: result } %>
 
       </dl>
   <% else %>

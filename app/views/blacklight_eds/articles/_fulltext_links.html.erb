@@ -3,23 +3,23 @@
     <dd class="blacklight-fulltext">
       <%- if has_pdf?(record) %>
           <%- eds_fulltext_links(record, ['pdflink']).each do |link| %>
-              <%= render partial: 'fulltext_link', locals: { record: record, link: link, label: 'PDF Full Text' } %>
+              <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'PDF Full Text' } %>
               <%= delimiter %>
           <%- end %>
       <%- end %>
       <%- if has_html?(record) %>
-          <%= render partial: 'fulltext_html_link', locals: { record: record } %>
+          <%= render partial: 'blacklight_eds/articles/fulltext_html_link', locals: { record: record } %>
           <%= delimiter %>
       <%- end %>
       <%- if has_smartlink?(record) %>
           <%- eds_fulltext_links(record, ['pdflink']).each do |link| %>
-              <%= render partial: 'fulltext_link', locals: { record: record, link: link, label: 'Linked Full Text' } %>
+              <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'Linked Full Text' } %>
               <%= delimiter %>
           <%- end %>
       <%- end %>
       <%- if has_ebook?(record) %>
           <%- eds_fulltext_links(record, ['ebook-pdf', 'ebook-epub']).each do |link| %>
-              <%= render partial: 'fulltext_link', locals: { record: record, link: link, label: 'eBook Full Text' } %>
+              <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'eBook Full Text' } %>
               <%= delimiter %>
           <%- end %>
       <%- end %>
