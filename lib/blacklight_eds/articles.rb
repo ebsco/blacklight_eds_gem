@@ -4,6 +4,10 @@ module BlacklightEds::Articles
   extend ActiveSupport::Concern
   extend ActiveSupport::Autoload
 
+  included do
+    helper_method :search_action_url
+  end
+
   def index
     api_query = generate_api_query params
 
@@ -76,6 +80,10 @@ module BlacklightEds::Articles
     next_params = {dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight}
 
     redirect_to path_for_eds_article dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight
+  end
+
+  def search_action_url(*args)
+    eds_articles_url *args
   end
 
 end
