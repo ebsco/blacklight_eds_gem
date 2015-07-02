@@ -34,7 +34,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   # Returns a profile. If the profile param is null, return the first profile
   def eds_profile profile=nil
-    profiles = Blacklight5::Application.config.eds_profiles
+    profiles = Rails.application.config.eds_profiles
     profiles.fetch(profile, profiles.values[0])
   end
 

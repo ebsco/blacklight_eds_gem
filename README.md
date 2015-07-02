@@ -23,12 +23,16 @@ Or install it yourself as:
 
 ## Usage
 
-For now, you need to manually edit some files in your blacklight app for the gem to work. We'll develop tasks to take care
+For now, you need to manually edit some files in your blacklight app for the gem to work. We'll develop generators to take care
 of most of the manual steps.
 
 TODO: Update this section once tasks are implemented to automate the setup
 
 * Add the following to `blacklight/app/controllers/application_controller.rb`
+
+```ruby
+require 'ebsco-discovery-service-api'
+```
 
 ```ruby
 helper BlacklightEds::Engine.helpers
@@ -42,17 +46,16 @@ In `blacklight/Gemfile`, add a line
 gem 'activerecord-session_store'
 ```
 
-From command line,
-
-```
-rake db:sessions:create
-rake db:migrate
-```
-
 Then run
 
 ```ruby
 bundle install
+```
+
+From command line,
+
+```
+rails generate active_record:session_migration
 ```
 
 Then in `blacklight/config/initializers/session_store.rb`, change
@@ -72,19 +75,27 @@ to
 Create a file `blacklight/config/eds.yml`, add the following:
 
 ```
+defaults: &DEFAULTS
+  default:
+    username: your_eds_username
+    password: your_eds_password
+    profile: your_eds_profile
+
+  other:
+    ...
+
 development:
-  username: your_eds_username
-  password: your_eds_password
-  profile: your_eds_profile
+  <<: *DEFAULTS
+
 test:
-  username: your_eds_username
-  password: your_eds_password
-  profile: your_eds_profile
+  <<: *DEFAULTS
+
 production:
-  username: your_eds_username
-  password: your_eds_password
-  profile: your_eds_profile
+  <<: *DEFAULTS
+
 ```
+
+* Add intializer
 
 * Configure routes
 
