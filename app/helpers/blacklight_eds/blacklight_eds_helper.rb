@@ -658,7 +658,7 @@ module BlacklightEds::BlacklightEdsHelper
     custom_link = result.fetch('FullText', {}).fetch('CustomLinks', []).find { |custom_link|
       custom_link['Category'] == 'fullText'
     }
-    img_tag = custom_link['Icon'].present? ? '<img src="' + custom_link['Icon'] + '" border="0">' : ''
+    img_tag = custom_link['Icon'].present? ? '<img src="' + custom_link['Icon'] + '" border="0"/>' : ''
     text = custom_link.fetch('Text', 'Full Text via Custom Link')
     link_to img_tag + text, custom_link['Url'], target: '_blank'
   end
