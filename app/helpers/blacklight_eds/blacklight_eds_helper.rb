@@ -658,9 +658,12 @@ module BlacklightEds::BlacklightEdsHelper
     custom_link = result.fetch('FullText', {}).fetch('CustomLinks', []).find { |custom_link|
       custom_link['Category'] == 'fullText'
     }
-    img_tag = custom_link['Icon'].present? ? '<img src="' + custom_link['Icon'] + '" border="0"/>' : ''
+    open_tag = "<img src=\"".html_safe
+    close_tag = "\" border=\"0\" alt=\" \"  />".html_safe
+    img_tag = custom_link['Icon'].present? ?   open_tag   + custom_link['Icon'] + close_tag   : ''
     text = custom_link.fetch('Text', 'Full Text via Custom Link')
     link_to img_tag + text, custom_link['Url'], target: '_blank'
+    
   end
 
   def has_ill?(result)
