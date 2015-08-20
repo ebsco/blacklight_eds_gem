@@ -14,17 +14,24 @@ module BlacklightEds::ArticlesControllerBehavior
   ###########
 
   def eds_connect profile='default'
-    unless session[:eds_connection] and eds_session[:profile] == profile
+
+    # Only create a new connection under the following circumstances:
+    if (not session.has_key? :eds_connection) or                  # If there is no existing connection
+      ( eds_session[:profile] != profile) or                      # Or we're changing profiles
+      ( user_signed_in? and eds_session[:user] == 'guest') or     # Or the user is already logged in
+      ( not user_signed_in? and eds_session[:user] != 'guest')    # Or the user is logged out
+
       # creates EDS API connection object, initializing it with application login credentials
       connection = EDSApi::ConnectionHandler.new(2)
       account = eds_profile profile
-      is_guest = current_user ? 'n' : 'y'
+      is_guest = user_signed_in? ? 'n' : 'y'
       connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
       Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
       eds_session.delete :session_key
       eds_session[:profile] = profile
       session[:eds_connection] = connection
     end
+
   end
 
   # Returns the connection object when called
