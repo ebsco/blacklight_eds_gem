@@ -47,7 +47,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
-    cache_key = current_user ? 'eds_auth_token/user' : 'eds_auth_token/guest'
+    cache_key = user_signed_in? ? 'eds_auth_token/user' : 'eds_auth_token/guest'
     auth_token = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
@@ -59,7 +59,7 @@ module BlacklightEds::ArticlesControllerBehavior
   end
 
   def eds_session_key
-    if current_user
+    if user_signed_in?
       if eds_session[:user] != current_user.id
         eds_session[:user] = current_user.id
         eds_session[:session_key] = eds_connection.create_session eds_auth_token
