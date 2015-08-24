@@ -11,10 +11,12 @@ module BlacklightEds::Articles
   def index
     api_query = generate_api_query params
 
-    if has_search_parameters?
+    if eds_has_search_parameters?
       @results = eds_search api_query
       update_results_in_session @results
       eds_session[:api_query] = api_query
+    else
+      flash.now[:error] = 'Please enter a search term in the search box '
     end
   end
 

@@ -1,5 +1,5 @@
 <% # container for all documents in index view -%>
-<%- if has_search_parameters? %>
+<%- if eds_has_search_parameters? %>
     <%- if has_records? @results %>
         <div id="documents">
           <% @results['SearchResult']['Data']['Records'].each do |result| %>

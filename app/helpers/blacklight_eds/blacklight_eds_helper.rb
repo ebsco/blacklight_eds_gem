@@ -3,10 +3,6 @@ require 'addressable/uri'
 
 module BlacklightEds::BlacklightEdsHelper
 
-  def has_search_parameters?
-    !params[:q].blank? or !params[:f].blank? or !params[:search_field].blank?
-  end
-
   # check to see if result has any facets.  crude, and I forget why I had to do a length check..
   def has_eds_facets?
     @results.fetch('SearchResult', {}).fetch('AvailableFacets', []).any?

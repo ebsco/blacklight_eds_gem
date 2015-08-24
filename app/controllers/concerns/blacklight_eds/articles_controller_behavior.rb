@@ -2,7 +2,7 @@ module BlacklightEds::ArticlesControllerBehavior
   extend ActiveSupport::Concern
 
   included do
-    helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links
+    helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links, :eds_has_search_parameters?
   end
 
   def html_unescape(text)
@@ -301,8 +301,9 @@ module BlacklightEds::ArticlesControllerBehavior
   end
 
 
-  def has_search_parameters?
-    !params[:q].blank? or !params[:f].blank? or !params[:search_field].blank?
+  def eds_has_search_parameters?
+    #!params[:q].blank? or !params[:f].blank? or !params[:search_field].blank?
+    !params[:q].blank?
   end
 
   # preview and next ---------------------------------------

@@ -36,14 +36,14 @@
 
 
 <div id="sidebar" class="col-md-3">
-  <%- if has_search_parameters? %>
+  <%- if eds_has_search_parameters? %>
       <%= render :partial=>'facets' %>
   <%- end %>
 </div><!--/well -->
 
 <div id="content" class="col-md-9">
     
-    <% unless has_search_parameters? %>
+    <% unless eds_has_search_parameters? %>
 	    <%= render 'home' %>
     <% else %>
 
