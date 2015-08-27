@@ -16,7 +16,9 @@ module BlacklightEds::Articles
       update_results_in_session @results
       eds_session[:api_query] = api_query
     else
-      flash.now[:error] = 'Please enter a search term in the search box '
+      if !params[:f].blank? or !params[:search_field].blank?
+        flash.now[:error] = 'Please enter a search term in the search box '
+      end
     end
   end
 
