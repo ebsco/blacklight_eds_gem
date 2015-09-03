@@ -499,7 +499,7 @@ module BlacklightEds::BlacklightEdsHelper
   ################
 
   def has_any_fulltext?(result)
-    has_pdf? result or has_html? result or has_smartlink? result or has_fulltext? result or has_ebook? result
+    has_pdf? result or has_html? result or has_smartlink? result or has_fulltext? result or has_epub? result
   end
 
   def show_an(result)
@@ -559,7 +559,7 @@ module BlacklightEds::BlacklightEdsHelper
 
   def has_pdf?(result)
     result.fetch('FullText', {}).fetch('Links', []).find { |link|
-      link['Type'] == 'pdflink'
+      link['Type'] == 'pdflink' or link['Type'] == 'ebook-pdf'
     }.present?
   end
 
@@ -579,9 +579,9 @@ module BlacklightEds::BlacklightEdsHelper
     }.present?
   end
 
-  def has_ebook?(result)
+  def has_epub?(result)
     result.fetch('FullText', {}).fetch('Links', []).find { |link|
-      link['Type'] == 'ebook-pdf' or link['Type'] == 'ebook-epub'
+      link['Type'] == 'ebook-epub'
     }.present?
   end
 
@@ -672,8 +672,27 @@ module BlacklightEds::BlacklightEdsHelper
     result.fetch('CustomLinks', []).select { |link|
       link['Category'] == 'ill'
     }.map { |link|
-      link_to 'Request via Interlibrary Loan', link['Url']
+      link_to 'Request via Interlibrary Loan', link['Url'], target: '_blank'
     }.join(' ').html_safe
+  end
+
+  def has_other_custom_links?(result)
+    result.fetch('CustomLinks', []).find { |link|
+      link['Category'] == 'other'
+    }.present?
+  end
+
+  def show_other_custom_links(result)
+    result.fetch('CustomLinks', []).select { |link|
+      link['Category'] == 'other' and not link['Text'].blank?
+    }.map { |link|
+      if link.fetch('Icon', nil).present?
+        label = image_tag(link['Icon']) + ' ' + link['Text']
+      else
+        label = link['Text']
+      end
+      link_to label, link['Url'], target: '_blank'
+    }
   end
 
 

@@ -2,7 +2,7 @@
     <dt class="blacklight-fulltext">Full-Text Options:</dt>
     <dd class="blacklight-fulltext">
       <%- if has_pdf?(record) %>
-          <%- eds_fulltext_links(record, ['pdflink']).each do |link| %>
+          <%- eds_fulltext_links(record, ['ebook-pdf', 'pdflink']).each do |link| %>
               <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'PDF Full Text' } %>
               <%= delimiter %>
           <%- end %>
@@ -17,9 +17,9 @@
               <%= delimiter %>
           <%- end %>
       <%- end %>
-      <%- if has_ebook?(record) %>
-          <%- eds_fulltext_links(record, ['ebook-pdf', 'ebook-epub']).each do |link| %>
-              <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'eBook Full Text' } %>
+      <%- if has_epub?(record) %>
+          <%- eds_fulltext_links(record, ['ebook-epub']).each do |link| %>
+              <%= render partial: 'blacklight_eds/articles/fulltext_link', locals: { record: record, link: link, label: 'EPUB Full Text' } %>
               <%= delimiter %>
           <%- end %>
       <%- end %>
