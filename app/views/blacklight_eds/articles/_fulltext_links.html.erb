@@ -23,8 +23,8 @@
               <%= delimiter %>
           <%- end %>
       <%- end %>
-      <%- if has_fulltext?(record) %>
-          <%= show_best_fulltext_link_detail(record) %>
+      <%- if has_fulltext_customlink?(record) %>
+          <%= show_fulltext_customlink(record) %>
       <%- end %>
     </dd>
 <%- elsif has_ill? record %>

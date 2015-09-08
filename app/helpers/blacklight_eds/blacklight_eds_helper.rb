@@ -549,7 +549,7 @@ module BlacklightEds::BlacklightEdsHelper
       link = '<a href="' + show_best_fulltext_link(result) + '" target="_blank">HTML Full Text</a>'
     elsif has_smartlink?(result)
       link = '<a href="' + show_smartlink_title_link(result) + '">Linked Full Text</a>'
-    elsif has_fulltext?(result)
+    elsif has_fulltext_customlink?(result)
       link = best_customlink_detail(result)
     else
       link = ''
@@ -567,7 +567,7 @@ module BlacklightEds::BlacklightEdsHelper
     result.fetch('FullText', {}).fetch('Text', {}).fetch('Availability', 0).to_s == '1'
   end
 
-  def has_fulltext?(result)
+  def has_fulltext_customlink?(result)
     result.fetch('FullText', {}).fetch('CustomLinks', []).find { |link|
       link['Category'] == 'fullText'
     }.present?
@@ -577,6 +577,10 @@ module BlacklightEds::BlacklightEdsHelper
     result.fetch('FullText', {}).fetch('Links', []).find { |link|
       link['Type'] == 'other'
     }.present?
+  end
+
+  def has_fulltext?(result)
+    has_pdf?(result) or has_html?(result) or has_epub?(result) or has_smartlink?(result) or has_fulltext_customlink?(result)
   end
 
   def has_epub?(result)
@@ -634,7 +638,7 @@ module BlacklightEds::BlacklightEdsHelper
     }.map { |link| link['Url'] }.join
   end
 
-  def show_fulltext(result)
+  def show_fulltext_customlink(result)
     result.fetch('FullText', {}).fetch('CustomLinks', []).select { |customLink|
       customLink['Category'] == 'fullText'
     }.map { |customLink|
