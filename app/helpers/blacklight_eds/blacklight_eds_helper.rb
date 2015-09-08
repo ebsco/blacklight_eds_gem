@@ -641,8 +641,12 @@ module BlacklightEds::BlacklightEdsHelper
   def show_fulltext_customlink(result)
     result.fetch('FullText', {}).fetch('CustomLinks', []).select { |customLink|
       customLink['Category'] == 'fullText'
-    }.map { |customLink|
-      link_to customLink.fetch('Text', 'Full Text via CustomLink' + customLink.to_s), customLink['Url']
+    }.map { |custom_link|
+      open_tag = "<img src=\"".html_safe
+      close_tag = "\" border=\"0\" alt=\" \"  />".html_safe
+      img_tag = custom_link['Icon'].present? ?   open_tag   + custom_link['Icon'] + close_tag   : ''
+      text = custom_link.fetch('Text', 'Full Text via Custom Link')
+      link_to img_tag + text, custom_link['Url'], target: '_blank'
     }.join(', ').html_safe
   end
 
