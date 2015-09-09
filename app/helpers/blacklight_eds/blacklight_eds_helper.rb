@@ -686,7 +686,7 @@ module BlacklightEds::BlacklightEdsHelper
 
   def has_other_custom_links?(result)
     result.fetch('CustomLinks', []).find { |link|
-      link['Category'] == 'other'
+      link['Category'] == 'other' and not link['Text'].blank?
     }.present?
   end
 
