@@ -499,7 +499,7 @@ module BlacklightEds::BlacklightEdsHelper
   ################
 
   def has_any_fulltext?(result)
-    has_pdf? result or has_html? result or has_smartlink? result or has_fulltext? result or has_epub? result
+    has_pdf? result or has_html? result or has_smartlink? result or has_fulltext? result or has_epub? result or has_other_custom_links? result
   end
 
   def show_an(result)
