@@ -479,7 +479,7 @@ module BlacklightEds::BlacklightEdsHelper
     titles = result.fetch('RecordInfo', {}).fetch('BibRecord', {}).fetch('BibEntity', {}).fetch('Titles', []).map { |title|
       title['TitleFull'].to_s
     }
-    titles.empty? ? 'Title not available.' : titles.join('/').html_safe?
+    titles.empty? ? 'Title not available.' : titles.join('/').html_safe
   end
 
   def show_results_array
