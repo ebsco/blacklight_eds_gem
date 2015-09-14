@@ -143,7 +143,7 @@ module BlacklightEds::ArticlesControllerBehavior
     newoptions = Hash[edsSubset.map { |k, v| [mappings[k] || k, v] }]
 
     #repace the raw query, adding searchmode and fieldcode
-    changedQuery = searchquery_extras.to_s + newoptions["query-1"].to_s
+    changedQuery = searchquery_extras.to_s + newoptions["query-1"].to_s.gsub(",", '').gsub(":", "")
     #eds_session[:debugNotes << "CHANGEDQUERY: " << changedQuery.to_s
     newoptions["query-1"] = changedQuery
 
