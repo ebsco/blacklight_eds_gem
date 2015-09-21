@@ -647,7 +647,7 @@ module BlacklightEds::BlacklightEdsHelper
       img_tag = custom_link['Icon'].present? ?   open_tag   + custom_link['Icon'] + close_tag   : ''
       text = custom_link.fetch('Text', 'Full Text via Custom Link')
       link_to img_tag + text, custom_link['Url'], target: '_blank'
-    }.join(', ').html_safe
+    }
   end
 
   # show prioritized custom links

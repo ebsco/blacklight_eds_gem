@@ -24,7 +24,7 @@
           <%- end %>
       <%- end %>
       <%- if has_fulltext_customlink?(record) %>
-          <%= show_fulltext_customlink(record) %>
+          <%= show_fulltext_customlink(record).join(', ').html_safe %>
       <%- end %>
     </dd>
 <%- elsif has_ill? record %>
