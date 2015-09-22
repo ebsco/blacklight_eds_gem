@@ -471,7 +471,7 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def show_title(result)
-    result['Items'].each do |item|
+    result.fetch('Items',[]).each do |item|
       if item['Group'] == 'Ti'
         return HTMLEntities.new.decode(item['Data']).html_safe
       end
