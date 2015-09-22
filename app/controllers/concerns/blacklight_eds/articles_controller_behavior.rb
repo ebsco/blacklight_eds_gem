@@ -30,13 +30,17 @@ module BlacklightEds::ArticlesControllerBehavior
       eds_session.delete :session_key
       eds_session[:profile] = profile
       session[:eds_connection] = connection
+      session[:eds_connection].debug_notes = ''
     end
-
   end
 
   # Returns the connection object when called
   def eds_connection
     session[:eds_connection]
+  end
+
+  def eds_connection_cleanup
+    eds_connection.debug_notes = ''
   end
 
   # Returns a profile. If the profile param is null, return the first profile
@@ -55,6 +59,8 @@ module BlacklightEds::ArticlesControllerBehavior
     logger.tagged('EDS') {
       logger.debug 'eds auth token: ' << auth_token
     }
+
+    eds_connection_cleanup
     auth_token
   end
 
@@ -74,6 +80,7 @@ module BlacklightEds::ArticlesControllerBehavior
     logger.tagged('EDS') {
       logger.debug 'eds session_key: ' << eds_session[:session_key]
     }
+    eds_connection_cleanup
     eds_session[:session_key]
   end
 
@@ -92,6 +99,7 @@ module BlacklightEds::ArticlesControllerBehavior
     if eds_connection.show_session_token != eds_session_key  # reset values. They'll be populated next time called
       [:session_key, :info, :num_limiters].each { |k| eds_session.delete(k) }
     end
+    eds_connection_cleanup
   end
 
   # generates parameters for the API call given URL parameters
@@ -156,7 +164,8 @@ module BlacklightEds::ArticlesControllerBehavior
 
     searchquery = newoptions.to_query
     # , : ( ) - unencoding expected punctuation
-    #eds_session[:debugNotes << "<p>SEARCH QUERY AS STRING: " << searchquery.to_s
+    #eds_session[:debugNotes << "<p>SEARCH QUERY AS STRING
+    # : " << searchquery.to_s
     #    searchquery = CGI::unescape(searchquery)
     #    #eds_session[:debugNotes << "<br />ESCAPED: " << searchquery.to_s
     searchquery = searchquery.gsub('limiter%5B%5D', 'limiter').gsub('facetfilter%5B%5D', 'facetfilter')
@@ -170,10 +179,10 @@ module BlacklightEds::ArticlesControllerBehavior
   def eds_search(apiquery)
     #eds_session[:debugNotes << "<p>API QUERY SENT: " << apiquery.to_s << "</p>"
     results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
+    eds_connection_cleanup
 
     #update session_key if new one was generated in the call
     check_session_currency
-
     results
   end
 
@@ -185,6 +194,7 @@ module BlacklightEds::ArticlesControllerBehavior
     highlight.gsub! ',not,', ','
     #eds_session[:debugNotes << "HIGHLIGHTAFTER: " << highlight.to_s
     record = eds_connection.retrieve(dbid, an, highlight, eds_session_key, eds_auth_token, :json).to_hash
+    eds_connection_cleanup
     #eds_session[:debugNotes << "RECORD: " << record.to_s
     #update session_key if new one was generated in the call
     check_session_currency
@@ -253,7 +263,9 @@ module BlacklightEds::ArticlesControllerBehavior
 
   def getAuthToken
     eds_connection.uid_authenticate(:json)
-    eds_connection.show_auth_token
+    auth_token = eds_connection.show_auth_token
+    eds_connection_cleanup
+    auth_token
   end
 
 
@@ -314,7 +326,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   def update_results_in_session results
     eds_session[:results] = results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).map { |r|
-      { an: r.fetch('Header', {}).fetch('An', nil), dbid: r.fetch('Header', {}).fetch('DbId', nil) }
+      [r.fetch('Header', {}).fetch('An', nil), r.fetch('Header', {}).fetch('DbId', nil)]
     }
     eds_session[:query_string] = results.fetch('SearchRequestGet', {}).fetch('QueryString', nil)
     eds_session[:total_hits] = results.fetch('SearchResult', {}).fetch('Statistics', {}).fetch('TotalHits', -1)

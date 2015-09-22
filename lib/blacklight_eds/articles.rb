@@ -77,8 +77,8 @@ module BlacklightEds::Articles
     record_index = next_id.to_i - (next_page - 1) * params[:resultsperpage].to_i - 1
     next_record = eds_session[:results][record_index]
 
-    next_an = next_record[:an]
-    next_dbid = next_record[:dbid]
+    next_an = next_record[0]
+    next_dbid = next_record[1]
     next_highlight = params[:q]
 
     next_params = {dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight}
