@@ -446,7 +446,7 @@ module BlacklightEds::BlacklightEdsHelper
         end
       end
       if flag == 1
-        return authorString.join("; ").html_safe
+        return truncate_article authorString.join("; ").html_safe
       end
     end
     contributors = result.fetch('RecordInfo', {}).fetch('BibRecord', {}).fetch('BibRelationships', {}).fetch('HasContributorRelationships', [])
@@ -473,7 +473,7 @@ module BlacklightEds::BlacklightEdsHelper
   def show_title(result)
     result.fetch('Items',[]).each do |item|
       if item['Group'] == 'Ti'
-        return HTMLEntities.new.decode(item['Data']).html_safe
+        return truncate_article HTMLEntities.new.decode(item['Data']).html_safe
       end
     end
     titles = result.fetch('RecordInfo', {}).fetch('BibRecord', {}).fetch('BibEntity', {}).fetch('Titles', []).map { |title|
@@ -730,6 +730,15 @@ module BlacklightEds::BlacklightEdsHelper
   # whether the results list have records
   def has_records? results
     not results.nil? and results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).count > 0
+  end
+
+  def truncate_article(s, length = 250, ellipsis = ' ...')
+    s = strip_tags s
+    if s.length > length
+      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis)
+    else
+      s
+    end
   end
 
 end
