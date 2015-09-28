@@ -735,7 +735,7 @@ module BlacklightEds::BlacklightEdsHelper
   def truncate_article(s, length = 250, ellipsis = ' ...')
     s = strip_tags s
     if s.length > length
-      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis)
+      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis).sub(/(,|;)(\...)/, ellipsis)
     else
       s
     end
