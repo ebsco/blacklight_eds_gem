@@ -732,7 +732,7 @@ module BlacklightEds::BlacklightEdsHelper
     not results.nil? and results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).count > 0
   end
 
-  def truncate_article(s, length = 250, ellipsis = ' ...')
+  def truncate_article(s, length = 250, ellipsis = '...')
     s = strip_tags s
     if s.length > length
       s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis).sub(/(,|;)(\...)/, ellipsis)
