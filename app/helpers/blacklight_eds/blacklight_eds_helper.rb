@@ -45,9 +45,10 @@ module BlacklightEds::BlacklightEdsHelper
   #retains some of current search's fields (limiters)
   #discards pagenumber, facets and filters, actions, etc.
   def show_hidden_field_tags
-    hidden_fields = "";
-    params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an, :fulltext_type) do |key, value|
-      if key == :eds_action
+    hidden_fields = ''
+    options = params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an, :fulltext_type)
+    options.each do |key, value|
+      if key == 'eds_action'
         if value =~ /addlimiter/ or value =~ /removelimiter/ or value =~ /setsort/ or value =~ /SetResultsPerPage/
           hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
         end
