@@ -41,6 +41,27 @@ module BlacklightEds::BlacklightEdsHelper
     search_action_url + '?' + generate_next_url + '&eds_action=' + eds_action
   end
 
+  #for the search form at the top of results
+  #retains some of current search's fields (limiters)
+  #discards pagenumber, facets and filters, actions, etc.
+  def show_hidden_field_tags
+    hidden_fields = "";
+    params.except(:search_field, :fromDetail, :facetfilter, :pagenumber, :q, :dbid, :an, :fulltext_type) do |key, value|
+      if key == :eds_action
+        if value =~ /addlimiter/ or value =~ /removelimiter/ or value =~ /setsort/ or value =~ /SetResultsPerPage/
+          hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
+        end
+      elsif value.kind_of?(Array)
+        value.each do |v|
+          hidden_fields << '<input type="hidden" name="' << key.to_s << '[]" value="' << v.to_s << '" />'
+        end
+      else
+        hidden_fields << '<input type="hidden" name="' << key.to_s << '" value="' << value.to_s << '" />'
+      end
+    end
+    hidden_fields.html_safe
+  end
+
   #############
   # Facets / Limiters sidebar
   #############
