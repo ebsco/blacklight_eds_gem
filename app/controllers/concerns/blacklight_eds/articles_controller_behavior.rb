@@ -30,7 +30,6 @@ module BlacklightEds::ArticlesControllerBehavior
       eds_session.delete :session_key
       eds_session[:profile] = profile
       session[:eds_connection] = connection
-      session[:eds_connection].debug_notes = ''
     end
   end
 
