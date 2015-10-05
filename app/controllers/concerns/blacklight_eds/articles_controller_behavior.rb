@@ -177,14 +177,14 @@ module BlacklightEds::ArticlesControllerBehavior
     results
   end
 
-  def eds_retrieve(dbid, an, highlight = "")
+  def eds_retrieve(dbid, an, highlight = "", ebookpreferredformat="ebook-pub")
     #eds_session[:debugNotes << "HIGHLIGHTBEFORE:" << highlight.to_s
     highlight.downcase!
     highlight.gsub! ',and,', ','
     highlight.gsub! ',or,', ','
     highlight.gsub! ',not,', ','
     #eds_session[:debugNotes << "HIGHLIGHTAFTER: " << highlight.to_s
-    record = eds_connection.retrieve(dbid, an, highlight, eds_session_key, eds_auth_token, :json).to_hash
+    record = eds_connection.retrieve(dbid, an, highlight, ebookpreferredformat, eds_session_key, eds_auth_token, :json).to_hash
     #eds_session[:debugNotes << "RECORD: " << record.to_s
     #update session_key if new one was generated in the call
     check_session_currency
