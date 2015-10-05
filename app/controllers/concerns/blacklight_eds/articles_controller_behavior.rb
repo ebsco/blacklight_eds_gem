@@ -176,7 +176,7 @@ module BlacklightEds::ArticlesControllerBehavior
     results
   end
 
-  def eds_retrieve(dbid, an, highlight = "", ebookpreferredformat="ebook-pub")
+  def eds_retrieve(dbid, an, highlight = "", ebookpreferredformat="")
     #eds_session[:debugNotes << "HIGHLIGHTBEFORE:" << highlight.to_s
     highlight.downcase!
     highlight.gsub! ',and,', ','

@@ -23,7 +23,7 @@ module BlacklightEds::Articles
   end
 
   def show
-    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]))
+    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), "")
 
     if not eds_session.has_key? :results and eds_session.has_key? :api_query
       @results = eds_search eds_session[:api_query]
