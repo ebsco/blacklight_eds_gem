@@ -39,10 +39,6 @@ module BlacklightEds::ArticlesControllerBehavior
     session[:eds_connection]
   end
 
-  def eds_connection_cleanup
-    eds_connection.debug_notes = ''
-  end
-
   # Returns a profile. If the profile param is null, return the first profile
   def eds_profile profile=nil
     profiles = Rails.application.config.eds_profiles
@@ -59,8 +55,6 @@ module BlacklightEds::ArticlesControllerBehavior
     logger.tagged('EDS') {
       logger.debug 'eds auth token: ' << auth_token
     }
-
-    eds_connection_cleanup
     auth_token
   end
 
@@ -80,7 +74,6 @@ module BlacklightEds::ArticlesControllerBehavior
     logger.tagged('EDS') {
       logger.debug 'eds session_key: ' << eds_session[:session_key]
     }
-    eds_connection_cleanup
     eds_session[:session_key]
   end
 
@@ -99,7 +92,6 @@ module BlacklightEds::ArticlesControllerBehavior
     if eds_connection.show_session_token != eds_session_key  # reset values. They'll be populated next time called
       [:session_key, :info, :num_limiters].each { |k| eds_session.delete(k) }
     end
-    eds_connection_cleanup
   end
 
   # generates parameters for the API call given URL parameters
@@ -179,7 +171,6 @@ module BlacklightEds::ArticlesControllerBehavior
   def eds_search(apiquery)
     #eds_session[:debugNotes << "<p>API QUERY SENT: " << apiquery.to_s << "</p>"
     results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
-    eds_connection_cleanup
 
     #update session_key if new one was generated in the call
     check_session_currency
@@ -194,7 +185,6 @@ module BlacklightEds::ArticlesControllerBehavior
     highlight.gsub! ',not,', ','
     #eds_session[:debugNotes << "HIGHLIGHTAFTER: " << highlight.to_s
     record = eds_connection.retrieve(dbid, an, highlight, eds_session_key, eds_auth_token, :json).to_hash
-    eds_connection_cleanup
     #eds_session[:debugNotes << "RECORD: " << record.to_s
     #update session_key if new one was generated in the call
     check_session_currency
@@ -263,9 +253,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   def getAuthToken
     eds_connection.uid_authenticate(:json)
-    auth_token = eds_connection.show_auth_token
-    eds_connection_cleanup
-    auth_token
+    eds_connection.show_auth_token
   end
 
 
