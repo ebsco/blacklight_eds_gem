@@ -169,7 +169,13 @@ module BlacklightEds::ArticlesControllerBehavior
   # main search function.  accepts string to be tacked on to API endpoint URL
   def eds_search(apiquery)
     #eds_session[:debugNotes << "<p>API QUERY SENT: " << apiquery.to_s << "</p>"
-    results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
+    begin
+      results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
+    rescue Exception, RuntimeError => e
+      logger.tagged('EDS') {
+        logger.error e
+      }
+    end
 
     #update session_key if new one was generated in the call
     check_session_currency
