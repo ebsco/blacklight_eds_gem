@@ -39,7 +39,13 @@ module BlacklightEds::Articles
   end
 
   def fulltext
-    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]),params[:fulltext_type])
+    if params[:fulltext_type] and params[:fulltext_type].start_with? 'ebook'
+      fulltext_type = params[:fulltext_type]
+    else
+      fulltext_type = ''
+    end
+
+    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), fulltext_type)
     if recordArray['Record'].present?
       record = recordArray['Record']
     end
