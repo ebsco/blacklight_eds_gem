@@ -169,6 +169,10 @@ module BlacklightEds::ArticlesControllerBehavior
   # main search function.  accepts string to be tacked on to API endpoint URL
   def eds_search(apiquery)
     #eds_session[:debugNotes << "<p>API QUERY SENT: " << apiquery.to_s << "</p>"
+
+    # force turn off highlight to fix eds gem bug
+    apiquery.gsub!("highlight=y", "highlight=n")
+
     begin
       results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
     rescue Exception, RuntimeError => e
