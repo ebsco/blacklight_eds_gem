@@ -70,6 +70,12 @@ to
 (App)::Application.config.session_store :active_record_store
 ```
 
+Then run
+
+```rake db:migrate```
+
+from the command line.
+
 * Add EDS profile
 
 Create a file `blacklight/config/eds.yml`, add the following:
