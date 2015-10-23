@@ -7,3 +7,9 @@ gem 'ebsco-discovery-service-api', '>=1.1.8'
 gem 'addressable'
 gem 'htmlentities'
 gem 'sanitize'
+
+group :test do
+  gem 'rspec'
+  gem 'rspec-rails'
+  gem 'simplecov'
+end
