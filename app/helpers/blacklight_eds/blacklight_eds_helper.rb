@@ -130,27 +130,25 @@ module BlacklightEds::BlacklightEdsHelper
     (generate_next_url.scan("facetfilter[]=").length > 0) or (generate_next_url.scan("limiter[]=").length > 0)
   end
 
-  # should probably return a hash and let the view handle the HTML
-  def show_applied_facets
-    applied_facets = '';
+  def list_applied_facets
+    applied_facets = []
     @results.fetch('SearchRequestGet', {}).fetch('SearchCriteriaWithActions', {}).
         fetch('FacetFiltersWithAction', []).each do |applied_facet|
       applied_facet['FacetValuesWithAction'].each do |facet_value|
         options = {
             class: "filter-#{facet_value['FacetValue']['Id'].to_s.gsub('EDS', '').gsub(' ', '').titleize}",
-            remove_action: facet_value['RemoveAction'].to_s,
+            remove_action: facet_value['RemoveAction'].to_s.gsub('&', '%26'),
             filter_name: facet_value['FacetValue']['Id'].to_s.gsub("EDS", "").titleize,
             filter_value: facet_value['FacetValue']['Value'].to_s.titleize
         }
-        applied_facets << render('constraints_element', options: options)
+        applied_facets << options
       end
     end
-    applied_facets.html_safe
+    applied_facets
   end
 
-  # should return hash and let the view handle the HTML
-  def show_applied_limiters
-    appliedlimiters = '';
+  def list_applied_limiters
+    applied_limiters = []
     @results.fetch('SearchRequestGet', {}).fetch('SearchCriteriaWithActions', {}).
         fetch('LimitersWithAction', []).each do |applied_limiter|
       limiter = eds_info.fetch('AvailableSearchCriteria', {}).fetch('AvailableLimiters', []).find { |limiter|
@@ -166,17 +164,16 @@ module BlacklightEds::BlacklightEdsHelper
         applied_limiter["LimiterValuesWithAction"].each do |limiter_values|
           options[:filter_name] = limiter_label.to_s.titleize
           options[:filter_value] = limiter_values["Value"].gsub("-01/", " to ").gsub("-12", "")
-          appliedlimiters << render('constraints_element', options: options)
+          applied_limiters << options
         end
       else
         options.delete :filter_name
         options[:filter_value] = limiter_label.to_s.titleize
-        appliedlimiters << render('constraints_element', options: options)
+        applied_limiters << options
       end
     end
-    appliedlimiters.html_safe
+    applied_limiters
   end
-
 
   ###########
   # Pagination

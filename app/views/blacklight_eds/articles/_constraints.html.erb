@@ -2,9 +2,14 @@
       <div id="appliedParams" class="clearfix constraints-container">
         <div class="pull-right"><%=link_to t('blacklight.search.start_over'), url_for(:action=>'index'), :class => "catalog_startOverLink btn btn-sm btn-text", :id=>"startOverLink" %></div>
         <span class="constraints-label">Current filters: </span>
-  
-        <%= show_applied_limiters %>
-        <%= show_applied_facets %>  
+
+        <%- list_applied_limiters.each do |limiter| %>
+            <%= render partial: 'constraints_element', locals: {options: limiter} %>
+        <%- end %>
+
+        <%- list_applied_facets.each do |facet| %>
+            <%= render partial: 'constraints_element', locals: {options: facet} %>
+        <%- end %>
 
       </div>
 <% end %>
