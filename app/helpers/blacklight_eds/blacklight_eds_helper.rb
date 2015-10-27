@@ -727,7 +727,7 @@ module BlacklightEds::BlacklightEdsHelper
     !params[:eds].blank? or !params[:eds_q].blank?
   end
 
-  def show_sort_and_per_page? response = nil
+  def eds_show_sort_and_per_page? response = nil
     response ||= @response
     response.response['numFound'] > 1
   end
