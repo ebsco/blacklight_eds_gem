@@ -752,11 +752,13 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def truncate_article(s, length = 250, ellipsis = '...')
-    s = strip_tags s
+    #s = strip_tags s
+    s = s.to_s.gsub(/relatesTo/, "sup")
+    s = sanitize s, tags: %w(sup)
     if s.length > length
-      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis).sub(/(,|;)(\...)/, ellipsis)
+      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis).sub(/(,|;)(\...)/, ellipsis).html_safe
     else
-      s
+      s.html_safe
     end
   end
 
