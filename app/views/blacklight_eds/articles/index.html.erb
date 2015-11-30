@@ -23,18 +23,6 @@
   }
 </script>
 
-<% eds_num_limiters.times do |i| %>
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#limiter-<%= i %>').click(function() {
-      window.location.href = htmlDecode('<%= request.fullpath.split("?")[0] + "?" + generate_next_url %>&eds_action=') +  $('#limiter-<%= i %>').val();
-      $("body").addClass("loading");       
-    });
-  });
-</script>
-<% end %>
-
-
 <div id="sidebar" class="col-md-3">
   <%- if eds_has_search_parameters? %>
       <%= render :partial=>'facets' %>

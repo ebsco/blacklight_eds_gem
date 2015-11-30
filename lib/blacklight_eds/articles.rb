@@ -12,9 +12,17 @@ module BlacklightEds::Articles
     api_query = generate_api_query params
 
     if eds_has_search_parameters?
-      @results = eds_search api_query
-      update_results_in_session @results
-      eds_session[:api_query] = api_query
+      begin
+        Timeout.timeout(30) do
+          # to test, add sleep(30) here
+          @results = eds_search api_query
+          update_results_in_session @results
+          eds_session[:api_query] = api_query
+        end
+      rescue
+        flash[:error] = t('eds.errors.connection')
+        redirect_to request.path
+      end
     else
       if !params[:f].blank? or !params[:search_field].blank?
         flash.now[:error] = 'Please enter a search term in the search box '
@@ -23,18 +31,26 @@ module BlacklightEds::Articles
   end
 
   def show
-    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), "")
+    recordArray = nil
+    begin
+      Timeout.timeout(30) do
+        recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), "")
 
-    if not eds_session.has_key? :results and eds_session.has_key? :api_query
-      @results = eds_search eds_session[:api_query]
-    end
+        if not eds_session.has_key? :results and eds_session.has_key? :api_query
+          @results = eds_search eds_session[:api_query]
+        end
 
-    if recordArray['Record'].present?
-      @record = recordArray['Record']
-    end
+        if recordArray['Record'].present?
+          @record = recordArray['Record']
+        end
 
-    respond_to do |format|
-      format.html
+        respond_to do |format|
+          format.html
+        end
+      end
+    rescue
+      flash[:error] = t('eds.errors.connection')
+      redirect_to search_action_url
     end
   end
 
@@ -45,15 +61,24 @@ module BlacklightEds::Articles
       fulltext_type = ''
     end
 
-    recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), fulltext_type)
-    if recordArray['Record'].present?
-      record = recordArray['Record']
-    end
-    fulltext_links = eds_fulltext_links(record, params[:fulltext_type])
-    if fulltext_links.empty?
-      flash.now[:error] = 'Full text not found for this item'
-    else
-      redirect_to eds_fulltext_links(record, params[:fulltext_type])[0]['Url']
+    recordArray = nil
+
+    begin
+      Timeout.timeout(30) do
+        recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), fulltext_type)
+        if recordArray['Record'].present?
+          record = recordArray['Record']
+        end
+        fulltext_links = eds_fulltext_links(record, params[:fulltext_type])
+        if fulltext_links.empty?
+          flash.now[:error] = 'Full text not found for this item'
+        else
+          redirect_to eds_fulltext_links(record, params[:fulltext_type])[0]['Url']
+        end
+      end
+    rescue
+      flash.now[:error] = t('eds.errors.connection')
+      redirect_to search_action_url
     end
   end
 
@@ -73,23 +98,32 @@ module BlacklightEds::Articles
       next_page = params[:pagenumber].to_i
     end
 
-    if new_params.present?
-      api_query = generate_api_query(new_params)
-      @results = eds_search api_query
-      update_results_in_session @results
-      eds_session[:api_query] = api_query
+    begin
+      Timeout.timeout(30) do
+        if new_params.present?
+          api_query = generate_api_query(new_params)
+          @results = eds_search api_query
+
+          update_results_in_session @results
+          eds_session[:api_query] = api_query
+        end
+
+        record_index = next_id.to_i - (next_page - 1) * params[:resultsperpage].to_i - 1
+        next_record = eds_session[:results][record_index]
+
+        next_an = next_record[0]
+        next_dbid = next_record[1]
+        next_highlight = params[:q]
+
+        next_params = {dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight}
+
+        redirect_to path_for_eds_article dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight
+      end
+    rescue
+      flash.now[:error] = t('eds.errors.connection')
+      redirect_to search_action_url
     end
 
-    record_index = next_id.to_i - (next_page - 1) * params[:resultsperpage].to_i - 1
-    next_record = eds_session[:results][record_index]
-
-    next_an = next_record[0]
-    next_dbid = next_record[1]
-    next_highlight = params[:q]
-
-    next_params = {dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight}
-
-    redirect_to path_for_eds_article dbid: next_dbid, an: next_an, resultId: next_id.to_s, hightlight: next_highlight
   end
 
   def search_action_url(*args)

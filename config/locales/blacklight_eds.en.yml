@@ -1,2 +1,5 @@
 en:
-  title: 'EDS Gem'
+  eds:
+    title: 'EDS Gem'
+    errors:
+      connection: 'Failed to connect to the EDS services'
