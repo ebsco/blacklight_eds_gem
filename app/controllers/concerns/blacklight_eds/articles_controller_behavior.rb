@@ -24,6 +24,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
       begin
         Timeout.timeout(30) do
+          sleep(31)
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile

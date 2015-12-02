@@ -14,6 +14,7 @@ module BlacklightEds::Articles
     if eds_has_search_parameters?
       begin
         Timeout.timeout(30) do
+          sleep(31)
           # to test, add sleep(30) here
           @results = eds_search api_query
           update_results_in_session @results
@@ -34,6 +35,7 @@ module BlacklightEds::Articles
     recordArray = nil
     begin
       Timeout.timeout(30) do
+        sleep(31)
         recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), "")
 
         if not eds_session.has_key? :results and eds_session.has_key? :api_query
@@ -65,6 +67,7 @@ module BlacklightEds::Articles
 
     begin
       Timeout.timeout(30) do
+        sleep(31)
         recordArray = eds_retrieve(params[:dbid].to_s,params[:an].to_s,termsToHighlight(params[:highlight]), fulltext_type)
         if recordArray['Record'].present?
           record = recordArray['Record']
@@ -100,6 +103,7 @@ module BlacklightEds::Articles
 
     begin
       Timeout.timeout(30) do
+        sleep(31)
         if new_params.present?
           api_query = generate_api_query(new_params)
           @results = eds_search api_query
