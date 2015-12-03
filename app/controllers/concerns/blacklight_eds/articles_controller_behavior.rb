@@ -9,21 +9,23 @@ module BlacklightEds::ArticlesControllerBehavior
     return CGI.unescape(text)
   end
 
-  ###########
-  # API Interaction
-  ###########
+  def need_to_reconnect?(profile)
+    return ( (not session.has_key? :eds_connection) or                  # If there is no existing connection
+        ( eds_session[:profile] != profile) or                      # Or we're changing profiles
+        ( user_signed_in? and eds_session[:user] == 'guest') or     # Or the user is already logged in
+        ( not user_signed_in? and eds_session[:user] != 'guest') and   # Or the user is logged out
+            not flash[:error] == t('eds.errors.connection') and
+            params[:search_scope] != 'catalog')
+  end
 
-  def eds_connect profile='default'
+  # Returns the connection object when called
+  def eds_connection
+    profile =  params[:eds_profile] || params[:campus] || 'default'
     # Only create a new connection under the following circumstances:
-    if (not session.has_key? :eds_connection) or                  # If there is no existing connection
-      ( eds_session[:profile] != profile) or                      # Or we're changing profiles
-      ( user_signed_in? and eds_session[:user] == 'guest') or     # Or the user is already logged in
-      ( not user_signed_in? and eds_session[:user] != 'guest') and   # Or the user is logged out
-      not flash[:error] == 'Failed to connect to the EDS services' and
-      params[:search_scope] != 'catalog'
-
+    if need_to_reconnect? profile
       begin
-        Timeout.timeout(30) do
+        Timeout.timeout(1) do
+          sleep(31)
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile
@@ -34,15 +36,13 @@ module BlacklightEds::ArticlesControllerBehavior
           eds_session[:profile] = profile
           session[:eds_connection] = connection
         end
-      rescue
+      rescue Exception, RuntimeError => e
+        logger.tagged('EDS') {
+          logger.error e
+        }
         flash[:error] = t('eds.errors.connection')
-        redirect_to request.path
       end
     end
-  end
-
-  # Returns the connection object when called
-  def eds_connection
     session[:eds_connection]
   end
 
@@ -181,13 +181,7 @@ module BlacklightEds::ArticlesControllerBehavior
     # force turn off highlight to fix eds gem bug
     apiquery.gsub!("highlight=y", "highlight=n")
 
-    begin
-      results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
-    rescue Exception, RuntimeError => e
-      logger.tagged('EDS') {
-        logger.error e
-      }
-    end
+    results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
 
     #update session_key if new one was generated in the call
     check_session_currency

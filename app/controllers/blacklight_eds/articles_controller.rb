@@ -8,7 +8,5 @@ class BlacklightEds::ArticlesController < BlacklightEds::ApplicationController
   helper_method :search_action_url
   helper_method :path_for_eds_article
 
-  before_filter { eds_connect params[:eds_profile] }
-
   # to override any method in this class, create a new module, and include it in the extended controller class
 end
