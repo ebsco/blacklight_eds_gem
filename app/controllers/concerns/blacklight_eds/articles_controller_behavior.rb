@@ -24,8 +24,7 @@ module BlacklightEds::ArticlesControllerBehavior
     # Only create a new connection under the following circumstances:
     if need_to_reconnect? profile
       begin
-        Timeout.timeout(1) do
-          sleep(31)
+        Timeout.timeout(30) do
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile
