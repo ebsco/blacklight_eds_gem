@@ -510,7 +510,7 @@ module BlacklightEds::BlacklightEdsHelper
   end
 
   def show_full_text_on_screen(result)
-    HTMLEntities.new.decode(result['FullText']['Text']['Value']) if has_full_text_on_screen? result
+    HTMLEntities.new.decode(HTMLEntities.new.decode(result['FullText']['Text']['Value'])) if has_full_text_on_screen? result
   end
 
   ################
