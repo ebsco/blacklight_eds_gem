@@ -49,7 +49,12 @@
             <dd class="blacklight-abstract"><%= show_subjects(result) %></dd>
         <% end %>
 
-        <%= render partial: 'blacklight_eds/articles/fulltext_links', locals: { delimiter: ' ', record: result } %>
+        <% if user_signed_in? %>
+            <%= render partial: 'fulltext_links', locals: { delimiter: ' ', record: result } %>
+        <% else %>
+            <dt class="blacklight-fulltext">Full Text</dt>
+            <dd class="blacklight-fulltext"><%= link_to "Please log in to see full-text options", new_user_session_path %></dt>
+        <% end %>
 
       </dl>
   <% else %>

@@ -1,5 +1,12 @@
 en:
   eds:
     title: 'EDS Gem'
+    all:
+      catalog:
+        title: 'Catalog Results'
+        description: 'View all catalog results'
+      articles:
+        title: 'Article Results'
+        description: 'View all articles results'
     errors:
       connection: 'Failed to connect to the EDS services'

@@ -2,6 +2,8 @@ require 'ebsco-discovery-service-api'
 require_dependency "blacklight_eds/application_controller"
 
 class BlacklightEds::ArticlesController < BlacklightEds::ApplicationController
+  include Blacklight::Marc::Catalog
+  include Blacklight::Catalog
   include BlacklightEds::Articles
   include Blacklight::Catalog::SearchContext
 

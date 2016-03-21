@@ -1,0 +1,77 @@
+<div id="content" class="col-md-12">
+
+  <div class="col-xs-6 columns">
+    <div class="well  js-eq-height">
+      <h2>
+        <%= link_to t('eds.all.catalog.title'), main_app.catalog_index_path(params) %>
+      </h2>
+
+      <div id="catalogContainer" class="">
+        <%- unless @response.empty? %>
+            <p class="result_count">
+              <%= page_entries_info(@response) %> results
+              <%= link_to t('eds.all.catalog.description'), main_app.catalog_index_path(params)  %>
+            </p>
+        <%- else %>
+            <h4>No results found for your search</h4>
+            <h4>Try modifying your search</h4>
+            <ul>
+              <li>Use fewer keywords to start, then refine your search using the links on the left.</li>
+            </ul>
+        <%- end %>
+      </div>
+      <div class="catalog_results">
+        <%- @document_list.each_with_index do |document, document_counter| %>
+            <div class="document blacklight-<%= document[:id] %>">
+            <h5 class="index_title document-title-heading">
+              <% if counter = document_counter_with_offset(document_counter) %>
+                <span class="document-counter">
+                  <%= t('blacklight.search.documents.counter', counter: counter) %>
+                </span>
+              <% end %>
+              <%= link_to document[:title_display], url_for_document(document), document_link_params(document, {counter: counter}) %>
+            </h5>
+            <%= render 'catalog/index_default', {document: document, document_counter: document_counter} %>
+            </div>
+        <%- end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-6 columns">
+    <div class="well  js-eq-height">
+      <h2>
+        <%= link_to t('eds.all.articles.title'), eds_articles_path(params) %>
+        <!-- goes to results page -->
+      </h2>
+      <%- if eds_has_search_parameters? %>
+          <%- if @results['SearchResult']['Data']['Records'].present? %>
+              <div id="articleContainer" class="">
+                <p class="result_count">
+                  <%= eds_page_entries_info.html_safe %> results
+                  <%= link_to t('eds.all.articles.description'), eds_articles_path(params) %>
+                </p>
+              </div>
+              <div class="article_results">
+                <% @results['SearchResult']['Data']['Records'].each do |result| %>
+                    <%= render 'document', result: result %>
+                <% end %>
+              </div>
+          <%- else %>
+              <div id="articleContainer" class="noresults">
+                <h4>No results found for your search</h4>
+                <h4>Try modifying your search</h4>
+                <ul>
+                  <li>Use fewer keywords to start, then refine your search using the links on the left.</li>
+                </ul>
+              </div>
+          <%- end %>
+      <%- else %>
+          <div id="articleContainer" class="">
+            Please enter a search term in the search box.
+          </div>
+      <%- end %>
+
+    </div>
+  </div>
+</div>

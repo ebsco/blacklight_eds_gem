@@ -8,6 +8,42 @@ module BlacklightEds::Articles
     helper_method :search_action_url
   end
 
+  def all
+    # eds results
+    api_query = generate_api_query params
+    begin
+      Timeout.timeout(30) do
+        if eds_has_search_parameters?
+          @results = eds_search api_query
+          update_results_in_session @results
+          eds_session[:api_query] = api_query
+        end
+      end
+    rescue
+      flash[:error] = t('eds.errors.connection')
+      redirect_to request.path
+    end
+
+    if has_search_parameters?
+      eds_session[:search_results_url] = request.url
+    end
+
+    # catalog search results
+    (@response, @document_list) = get_search_results
+
+    respond_to do |format|
+      format.html { preferred_view }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.json do
+        render json: render_search_results_as_json
+      end
+
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
+  end
+
   def index
     api_query = generate_api_query params
 
