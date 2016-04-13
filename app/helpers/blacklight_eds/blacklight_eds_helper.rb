@@ -74,7 +74,11 @@ module BlacklightEds::BlacklightEdsHelper
     }
     limiter_checked = applied_limiter.present?
     limiter_action = limiter_checked ? applied_limiter["RemoveAction"].to_s : limiter["AddAction"].to_s.gsub('value', 'y')
-    check_box_tag("limiters", limiter_action, limiter_checked, :id => ("limiter-" + count.to_s), :style => "margin-top:-5px;")
+
+    clickURL = eds_action_url limiter_action
+    clickaction = "window.location.assign('" + clickURL + "');"
+
+    check_box_tag("limiters", limiter_action, limiter_checked, :id => ("limiter-" + count.to_s), :style => "margin-top:-5px;", :onclick => clickaction)
   end
 
   def show_date_link prior
