@@ -767,4 +767,11 @@ module BlacklightEds::BlacklightEdsHelper
     end
   end
 
+  def eds_user_signed_in?
+    user_signed_in?
+  end
+
+  def eds_current_user
+    current_user
+  end
 end

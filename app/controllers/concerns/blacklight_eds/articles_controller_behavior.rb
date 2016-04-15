@@ -12,8 +12,8 @@ module BlacklightEds::ArticlesControllerBehavior
   def need_to_reconnect?(profile)
     return ( (not session.has_key? :eds_connection) or                  # If there is no existing connection
         ( eds_session[:profile] != profile) or                      # Or we're changing profiles
-        ( user_signed_in? and eds_session[:user] == 'guest') or     # Or the user is already logged in
-        ( not user_signed_in? and eds_session[:user] != 'guest') and   # Or the user is logged out
+        ( eds_user_signed_in? and eds_session[:user] == 'guest') or     # Or the user is already logged in
+        ( not eds_user_signed_in? and eds_session[:user] != 'guest') and   # Or the user is logged out
             not flash[:error] == t('eds.errors.connection') and
             params[:search_scope] != 'catalog')
   end
@@ -53,7 +53,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
-    cache_key = user_signed_in? ? 'eds_auth_token/user' : 'eds_auth_token/guest'
+    cache_key = eds_user_signed_in? ? 'eds_auth_token/user' : 'eds_auth_token/guest'
     auth_token = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
@@ -65,9 +65,9 @@ module BlacklightEds::ArticlesControllerBehavior
   end
 
   def eds_session_key
-    if user_signed_in?
-      if eds_session[:user] != current_user.id
-        eds_session[:user] = current_user.id
+    if eds_user_signed_in?
+      if eds_session[:user] != eds_current_user.id
+        eds_session[:user] = eds_current_user.id
         eds_session[:session_key] = eds_connection.create_session eds_auth_token
       end
     else
@@ -308,4 +308,5 @@ module BlacklightEds::ArticlesControllerBehavior
     eds_session[:query_string] = results.fetch('SearchRequestGet', {}).fetch('QueryString', nil)
     eds_session[:total_hits] = results.fetch('SearchResult', {}).fetch('Statistics', {}).fetch('TotalHits', -1)
   end
+
 end
