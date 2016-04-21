@@ -28,7 +28,7 @@ module BlacklightEds::ArticlesControllerBehavior
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile
-          is_guest = user_signed_in? ? 'n' : 'y'
+          is_guest = eds_user_signed_in? ? 'n' : 'y'
           connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
           Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
           eds_session.delete :session_key
