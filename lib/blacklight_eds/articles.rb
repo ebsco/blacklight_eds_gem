@@ -166,4 +166,8 @@ module BlacklightEds::Articles
     eds_articles_url *args
   end
 
+  def start_new_search_session?
+    action_name == 'index' or action_name == 'all'
+  end
+
 end
