@@ -41,19 +41,16 @@
         </div>
       </div>
 
-      <!--/   ./blacklight_with_eds/blacklight_advanced_search-2.2.0/app/views/advanced/_form-group advanced-search-fields.html.erb -->
-
       <div class="sort-submit-buttons clearfix" class="col-sm-12">
-        <!--<div class="sort-buttons pull-left">-->
-          <!--<label class="control-label" for="sort">Sort results by</label>-->
-          <!--<select class="form-control sort-select" id="sort" name="sort">-->
-            <!--<option value="date">Date Newest</option>-->
-            <!--<option value="date2">Date Oldest</option>-->
-            <!--<option value="author">Author</option>-->
-            <!--<option value="title">Title</option>-->
-            <!--<option value="relevance" selected>Relevance</option>-->
-          <!--</select>-->
-        <!--</div>-->
+        <div class="sort-buttons pull-left">
+          <label class="control-label" for="sort">Sort results by</label>
+          <select class="form-control sort-select" id="sort" name="sort">
+            <option value="date">Date Newest</option>
+            <option value="date2">Date Oldest</option>
+            <option value="author">Author</option>
+            <option value="relevance" selected>Relevance</option>
+          </select>
+        </div>
 
         <div class="submit-buttons pull-right">
           <%= link_to 'Start Over', eds_articles_advanced_path, html_options={class: 'btn btn-default advanced-search-start-over'} %>
