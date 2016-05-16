@@ -1,9 +1,13 @@
+require 'date'
+
 module BlacklightEds::ArticlesControllerBehavior
   extend ActiveSupport::Concern
 
   included do
     helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links, :eds_has_search_parameters?
   end
+
+  ADVANCED_KEYS = { author: 'AU', title: 'TI', subject: 'SU', journal: 'SO', abstract: 'AB', alltext: 'TX' }
 
   def html_unescape(text)
     return CGI.unescape(text)
@@ -104,27 +108,6 @@ module BlacklightEds::ArticlesControllerBehavior
   # options is usually the params hash
   # this function strips out unneeded parameters and reformats them to form a string that the API accepts as input
   def generate_api_query(options)
-    #translate Blacklight search_field into query index
-    if options["search_field"].present?
-      if options["search_field"] == "author"
-        fieldcode = "AU:"
-      elsif options["search_field"] == "subject"
-        fieldcode = "SU:"
-      elsif options["search_field"] == "title"
-        fieldcode = "TI:"
-      else
-        fieldcode = ""
-      end
-    else
-      fieldcode = ""
-    end
-
-    #should write something to allow this to be overridden
-    searchmode = "AND"
-
-    #build 'query-1' API URL parameter
-    searchquery_extras = searchmode + "," + fieldcode
-
     unless options.has_key? 'resultsperpage'
       # set number of results per page using the blacklight_config if available
       if blacklight_config.present? and blacklight_config.has_key? :default_solr_params
@@ -135,42 +118,43 @@ module BlacklightEds::ArticlesControllerBehavior
     end
 
     #filter to make sure the only parameters put into the API query are those that are expected by the API
-    edsKeys = ["eds_action", "q", "query-1", "facetfilter[]", "facetfilter", "sort", "includefacets", "searchmode", "view", "resultsperpage", "sort", "pagenumber", "highlight", "limiter", "limiter[]"]
-    edsSubset = {}
-    options.except(:action, :controller, :utf8).each do |key, value|
-      if edsKeys.include?(key)
-        edsSubset[key] = value
-      end
-    end
-
+    edsKeys = ["eds_action", "q", "facetfilter[]", "facetfilter", "sort", "includefacets", "searchmode", "view", "resultsperpage", "sort", "pagenumber", "highlight", "limiter", "limiter[]"]
+    eds_options = options.select {|key| edsKeys.include?(key) or key.start_with? 'query-' }
     #rename parameters to expected names
     #action and query-1 were renamed due to Rails and Blacklight conventions respectively
-    mappings = {"eds_action" => "action", "q" => "query-1"}
-    newoptions = Hash[edsSubset.map { |k, v| [mappings[k] || k, v] }]
+    eds_options['action'] = eds_options.delete 'eds_action'
+    if eds_options.has_key? 'q'
+      eds_options['query-1'] = query_fragment 'AND', options['search_field'], eds_options.delete('q').gsub(/[,:]/, ' ')
+    end
 
-    #repace the raw query, adding searchmode and fieldcode
-    changedQuery = searchquery_extras.to_s + newoptions["query-1"].to_s.gsub(",", '').gsub(":", "")
-    #eds_session[:debugNotes << "CHANGEDQUERY: " << changedQuery.to_s
-    newoptions["query-1"] = changedQuery
+    searchquery = eds_options.to_query
+    # , : ( ) - decoding expected punctuation
+    searchquery = searchquery.gsub('limiter%5B%5D', 'limiter')
+                      .gsub('facetfilter%5B%5D', 'facetfilter')
+                      .gsub('%28', '(')
+                      .gsub('%3A', ':')
+                      .gsub('%29', ')')
+                      .gsub('%23', ',')
+    searchquery
+  end
 
-    #    uri = Addressable::URI.new
-    #    uri.query_values = newoptions
-    #    searchquery = uri.query
-    #    debugNotes << "SEARCH QUERY " << searchquery.to_s
-    #    searchtermindex = searchquery.index('query-1=') + 8
-    #    searchquery.insert searchtermindex, searchquery_extras
+  def advanced_generate_api_query(options)
+    query_options = options.select { |key, val| ADVANCED_KEYS.include? key.to_sym and not val.blank?}
+    search_query = {}
+    query_options.each_with_index { |pair, i|
+      search_query["query-#{i+1}"] = query_fragment options['op'] || 'AND', pair[0], pair[1].to_s.gsub(/[,:]/, ' ')
+    }
+    # publication dates
+    start_date = Date.parse(options['publication_date_start']).strftime('%Y%m%d') rescue nil
+    end_date = Date.parse(options['publication_date_end']).strftime('%Y%m31') rescue nil
+    search_query["query-#{search_query.size+1}"] = "AND,DT:#{start_date}-#{end_date}" if !start_date.blank? and !end_date.blank?
+    search_query['sort'] = options['sort'] unless options['sort'].blank?
+    search_query.to_query
+  end
 
-    searchquery = newoptions.to_query
-    # , : ( ) - unencoding expected punctuation
-    #eds_session[:debugNotes << "<p>SEARCH QUERY AS STRING
-    # : " << searchquery.to_s
-    #    searchquery = CGI::unescape(searchquery)
-    #    #eds_session[:debugNotes << "<br />ESCAPED: " << searchquery.to_s
-    searchquery = searchquery.gsub('limiter%5B%5D', 'limiter').gsub('facetfilter%5B%5D', 'facetfilter')
-    searchquery = searchquery.gsub('%28', '(').gsub('%3A', ':').gsub('%29', ')').gsub('%23', ',')
-    #    searchquery = searchquery.gsub(':','%3A')
-    #eds_session[:debugNotes << "<br />FINAL: " << searchquery.to_s << "</p>"
-    return searchquery
+  def query_fragment(op='AND', field='', term)
+    field_code = ADVANCED_KEYS.fetch( (field||'').to_sym, '')
+    field_code.blank? ? "#{op},#{term}" : "#{op},#{field_code}:#{term}"
   end
 
   # main search function.  accepts string to be tacked on to API endpoint URL
@@ -292,7 +276,11 @@ module BlacklightEds::ArticlesControllerBehavior
 
   def eds_has_search_parameters?
     #!params[:q].blank? or !params[:f].blank? or !params[:search_field].blank?
-    !params[:q].blank?
+    if params[:advanced]
+      not params.select { |key, val| ADVANCED_KEYS.include?(key.to_sym) and not val.blank? }.empty?
+    else
+      not params[:q].blank?
+    end
   end
 
   # preview and next ---------------------------------------

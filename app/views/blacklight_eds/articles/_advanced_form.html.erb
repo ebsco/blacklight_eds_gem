@@ -1,0 +1,66 @@
+<h1 class="advanced page-header">
+  Articles Advanced Search
+</h1>
+<%= form_tag(eds_articles_path, method: :get, class: 'form-horizontal advanced') do %>
+    <input name="utf8" type="hidden" value="✓">
+    <%= hidden_field_tag 'advanced', 'true' %>
+
+    <div id="advanced_search">
+      <div class="form-group advanced-search-field">
+        <label class="col-sm-3 control-label" for="alltext">All Fields</label>
+        <div class="col-sm-9">
+          <input class="form-control" name="alltext" type="text">
+        </div>
+      </div>
+      <div class="form-group advanced-search-field">
+        <label class="col-sm-3 control-label" for="title">Title</label>
+        <div class="col-sm-9">
+          <input class="form-control" id="title" name="title" type="text">
+        </div>
+      </div>
+      <div class="form-group advanced-search-field">
+        <label class="col-sm-3 control-label" for="author">Author</label>
+        <div class="col-sm-9">
+          <input class="form-control" id="author" name="author" type="text">
+        </div>
+      </div>
+      <div class="form-group advanced-search-field">
+        <label class="col-sm-3 control-label" for="journal">Journal Title</label>
+        <div class="col-sm-9">
+          <input class="form-control" id="journal" name="journal" type="text"/>
+        </div>
+      </div>
+
+      <div class="form-group advanced-search-field">
+        <label class="col-sm-3 control-label">Published</label>
+        <div class="col-sm-9">
+          <label class="col-sm-2 control-label" for="publication_date_start">Start</label>
+          <input class="col-sm-4" name="publication_date_start" type="text" placeholder="MM/YYYY"/>
+          <label class="col-sm-2 control-label" for="publication_date_start">End</label>
+          <input class="col-sm-4" name="publication_date_end" type="text" placeholder="MM/YYYY"/>
+        </div>
+      </div>
+
+      <!--/   ./blacklight_with_eds/blacklight_advanced_search-2.2.0/app/views/advanced/_form-group advanced-search-fields.html.erb -->
+
+      <div class="sort-submit-buttons clearfix" class="col-sm-12">
+        <!--<div class="sort-buttons pull-left">-->
+          <!--<label class="control-label" for="sort">Sort results by</label>-->
+          <!--<select class="form-control sort-select" id="sort" name="sort">-->
+            <!--<option value="date">Date Newest</option>-->
+            <!--<option value="date2">Date Oldest</option>-->
+            <!--<option value="author">Author</option>-->
+            <!--<option value="title">Title</option>-->
+            <!--<option value="relevance" selected>Relevance</option>-->
+          <!--</select>-->
+        <!--</div>-->
+
+        <div class="submit-buttons pull-right">
+          <%= link_to 'Start Over', eds_articles_advanced_path, html_options={class: 'btn btn-default advanced-search-start-over'} %>
+          <input class="btn btn-primary advanced-search-submit" id="advanced-search-submit" name="commit" type="submit" value="Search">
+        </div>
+      </div>
+    </div>
+
+
+<%- end %>

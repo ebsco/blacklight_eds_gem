@@ -45,8 +45,29 @@ module BlacklightEds::Articles
   end
 
   def index
-    api_query = generate_api_query params
+    api_query = params[:advanced] ? advanced_generate_api_query(params): generate_api_query(params)
 
+    if eds_has_search_parameters?
+      begin
+        Timeout.timeout(30) do
+          # to test, add sleep(30) here
+          @results = eds_search api_query
+          update_results_in_session @results
+          eds_session[:api_query] = api_query
+        end
+      rescue
+        flash[:error] = t('eds.errors.connection')
+        redirect_to request.path
+      end
+    else
+      if !params[:f].blank? or !params[:search_field].blank?
+        flash.now[:error] = 'Please enter a search term in the search box '
+      end
+    end
+  end
+
+  def advanced
+    api_query = advanced_generate_api_query params
     if eds_has_search_parameters?
       begin
         Timeout.timeout(30) do
