@@ -268,7 +268,7 @@ module BlacklightEds::BlacklightEdsHelper
     if last_result_on_page_num > show_total_hits
       last_result_on_page_num = show_total_hits
     end
-    page_info = "<strong>" + first_result_on_page_num.to_s + "</strong> - <strong>" + last_result_on_page_num.to_s + "</strong> of <strong>" + show_total_hits.to_s + "</strong>"
+    page_info = "<strong>" + first_result_on_page_num.to_s + "</strong> - <strong>" + last_result_on_page_num.to_s + "</strong> of <strong>" + number_with_delimiter(show_total_hits) + "</strong>"
     if show_current_page > 1
       previous_page = show_current_page - 1
       previous_link = '<a href="' + eds_action_url("GoToPage(#{previous_page.to_s})") + '">&laquo; Previous</a> | '

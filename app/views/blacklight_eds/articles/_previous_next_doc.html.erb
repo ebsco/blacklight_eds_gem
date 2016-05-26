@@ -6,7 +6,7 @@
           <%= link_to "Previous", request.fullpath.split("/" + params[:dbid])[0] + "/switch/?" + generate_next_url + "&resultId=" + prevId.to_s %>
           |
       <% end %>
-      Result <strong><%= params[:resultId].to_s %></strong> of <strong><%= show_total_hits %></strong>
+      Result <strong><%= params[:resultId].to_s %></strong> of <strong><%= number_with_delimiter(show_total_hits) %></strong>
       <% if params[:resultId].to_i < show_total_hits.to_i %>
           <% nextId = params[:resultId].to_i + 1 %>
           | <%= link_to "Next", request.fullpath.split("/" + params[:dbid])[0] + "/switch/?" + generate_next_url + "&resultId=" + nextId.to_s %>

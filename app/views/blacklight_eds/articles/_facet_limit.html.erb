@@ -7,7 +7,7 @@
           </a>
         </span>
         <span class="facet-count">
-          <%=facetValue['Count'].to_s%>
+          <%= number_with_delimiter(facetValue['Count']) %>
         </span>
       </li>
   <%- end %>
