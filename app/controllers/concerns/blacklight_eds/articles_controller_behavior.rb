@@ -279,7 +279,17 @@ module BlacklightEds::ArticlesControllerBehavior
     if params[:advanced]
       not params.select { |key, val| ADVANCED_KEYS.include?(key.to_sym) and not val.blank? }.empty?
     else
-      not params[:q].blank?
+      if params[:q]
+        not params[:q].blank?
+      else
+        # count number of query-i params
+        query_params = params.select {|k| k.start_with? 'query-'}
+        if params[:eds_action] and params[:eds_action].start_with? 'removequery'
+          query_params.size > 1
+        else
+          query_params.size > 0
+        end
+      end
     end
   end
 

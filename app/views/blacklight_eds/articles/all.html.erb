@@ -22,6 +22,8 @@
       </div>
       <div class="catalog_results">
         <%- @document_list.each_with_index do |document, document_counter| %>
+            <div class="documentHeader">
+              <%= render 'catalog/bookmark_control', document: document %>
             <div class="document blacklight-<%= document[:id] %>">
             <h5 class="index_title document-title-heading">
               <% if counter = document_counter_with_offset(document_counter) %>
@@ -32,6 +34,7 @@
               <%= link_to document[:title_display], url_for_document(document), document_link_params(document, {counter: counter}) %>
             </h5>
             <%= render 'catalog/index_default', {document: document, document_counter: document_counter} %>
+            </div>
             </div>
         <%- end %>
       </div>

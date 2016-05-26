@@ -17,10 +17,10 @@ module BlacklightEds::BlacklightEdsHelper
       #q is moved back to 'query-1' in 'generate_api_query'
       #should probably pull from Info method to determine replacement strings
       #i could turn the query into a Hash, but available functions to do so delete duplicated params (Addressable)
-      url.gsub!("query-1=AND,TI:", "q=")
-      url.gsub!("query-1=AND,AU:", "q=")
-      url.gsub!("query-1=AND,SU:", "q=")
-      url.gsub!("query-1=AND,", "q=")
+      # url.gsub!("query-1=AND,TI:", "q=")
+      # url.gsub!("query-1=AND,AU:", "q=")
+      # url.gsub!("query-1=AND,SU:", "q=")
+      # url.gsub!("query-1=AND,", "q=")
 
       #Rails framework doesn't allow repeated params.  turning these into arrays fixes it.
       url.gsub!("facetfilter=", "facetfilter[]=")
@@ -131,7 +131,39 @@ module BlacklightEds::BlacklightEdsHelper
 
   # used when determining if the "constraints" partial should display
   def query_has_facetfilters?(localized_params = params)
-    (generate_next_url.scan("facetfilter[]=").length > 0) or (generate_next_url.scan("limiter[]=").length > 0)
+    (generate_next_url.scan("facetfilter[]=").length > 0) or (generate_next_url.scan("limiter[]=").length > 0) or
+        (generate_next_url.scan("q=").length > 0) or (params[:advanced] == 'true') or (generate_next_url.scan("query-").length > 0)
+  end
+
+  def list_applied_queries
+    field_codes = {TI: 'Title', TX: 'All Text', SU: 'Subject', SO: 'Journal', AB: 'Abstract', AU: 'Author', DT: 'Date'}
+    applied_queries = []
+    qwa = @results.fetch('SearchRequestGet', {}).fetch('SearchCriteriaWithActions', {}).
+        fetch('QueriesWithAction', [])
+    if not qwa.nil?
+      qwa.each_with_index do |query, index|
+        options = {
+            class: "query-constraint",
+            remove_action: query.fetch('RemoveAction', ''),
+            filter_value: query['Query']['Term'],
+            filter_name: query['Query']['FieldCode'] || 'keyword'
+        }
+
+        if query['Query']['FieldCode']
+          options[:filter_name] = field_codes.fetch(query['Query']['FieldCode'].to_sym, query['Query']['FieldCode'])
+        else
+          options[:filter_name] = 'keyword'
+        end
+
+        if options[:filter_name] == 'Date'
+          dates = options[:filter_value].split('-')
+          options[:filter_value] = "#{dates[0][4..5]}/#{dates[0][0..3]}-#{dates[1][4..5]}/#{dates[1][0..3]}"
+        end
+
+        applied_queries << options
+      end
+    end
+    applied_queries
   end
 
   def list_applied_facets

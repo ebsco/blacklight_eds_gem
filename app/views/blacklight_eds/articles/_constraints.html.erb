@@ -1,15 +1,19 @@
-<% if query_has_facetfilters? %>
-      <div id="appliedParams" class="clearfix constraints-container">
-        <div class="pull-right"><%=link_to t('blacklight.search.start_over'), url_for(:action=>'index'), :class => "catalog_startOverLink btn btn-sm btn-text", :id=>"startOverLink" %></div>
-        <span class="constraints-label">Current filters: </span>
+<%- if query_has_facetfilters? %>
+    <div id="appliedParams" class="clearfix constraints-container">
+      <div class="pull-right"><%= link_to t('blacklight.search.start_over'), url_for(:action => 'index'), :class => "catalog_startOverLink btn btn-sm btn-text", :id => "startOverLink" %></div>
+      <span class="constraints-label">Current filters: </span>
 
-        <%- list_applied_limiters.each do |limiter| %>
-            <%= render partial: 'constraints_element', locals: {options: limiter} %>
-        <%- end %>
+      <%- list_applied_queries.each do |query| %>
+          <%= render partial: 'constraints_element', locals: {options: query} %>
+      <%- end %>
+      <%- list_applied_limiters.each do |limiter| %>
+          <%= render partial: 'constraints_element', locals: {options: limiter} %>
+      <%- end %>
 
-        <%- list_applied_facets.each do |facet| %>
-            <%= render partial: 'constraints_element', locals: {options: facet} %>
-        <%- end %>
+      <%- list_applied_facets.each do |facet| %>
+          <%= render partial: 'constraints_element', locals: {options: facet} %>
+      <%- end %>
 
-      </div>
-<% end %>
+    </div>
+<%- end %>
+
