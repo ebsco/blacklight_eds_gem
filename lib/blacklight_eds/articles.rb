@@ -188,7 +188,7 @@ module BlacklightEds::Articles
   end
 
   def start_new_search_session?
-    action_name == 'index' or action_name == 'all'
+    action_name == 'index' or action_name == 'all' or action_name == 'advanced'
   end
 
 end
