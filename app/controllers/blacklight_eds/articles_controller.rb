@@ -7,6 +7,8 @@ class BlacklightEds::ArticlesController < BlacklightEds::ApplicationController
   include BlacklightEds::Articles
   include Blacklight::Catalog::SearchContext
 
+  copy_blacklight_config_from CatalogController
+
   helper_method :search_action_url
   helper_method :path_for_eds_article
 
