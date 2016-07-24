@@ -84,8 +84,9 @@ module BlacklightEds::ArticlesControllerBehavior
   end
 
   def eds_info
-    #eds_session[:info] ||= eds_connection.info(eds_session_key, eds_auth_token, :json).to_hash
-    eds_connection.info(eds_session_key, eds_auth_token, :json).to_hash
+    Rails.cache.fetch('EDS_INFO', expires_in: 24.hours) do
+      eds_connection.info(eds_session_key, eds_auth_token, :json).to_hash
+    end
   end
 
   def eds_num_limiters
