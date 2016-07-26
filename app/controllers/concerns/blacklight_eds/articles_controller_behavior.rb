@@ -24,13 +24,14 @@ module BlacklightEds::ArticlesControllerBehavior
     # Only create a new connection under the following circumstances:
     if need_to_reconnect? profile
       begin
-        Timeout.timeout(30) do
+        Timeout.timeout(5) do
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile
           is_guest = eds_user_signed_in? ? 'n' : 'y'
           connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
-          Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
+          Rails.cache.delete('eds_auth_token/user') # clean up the cache
+          Rails.cache.delete('eds_auth_token/guest') # clean up the cache
           eds_session.delete :session_key
           eds_session[:profile] = profile
           session[:eds_connection] = connection
@@ -40,7 +41,7 @@ module BlacklightEds::ArticlesControllerBehavior
           logger.error e
           logger.error e.backtrace.join("\n")
         }
-        flash[:error] = t('eds.errors.connection')
+        # flash[:error] = t('eds.errors.connection')
       end
     end
     session[:eds_connection]
