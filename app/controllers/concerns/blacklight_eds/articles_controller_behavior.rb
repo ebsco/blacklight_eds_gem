@@ -38,6 +38,7 @@ module BlacklightEds::ArticlesControllerBehavior
       rescue Exception, RuntimeError => e
         logger.tagged('EDS') {
           logger.error e
+          logger.error e.backtrace.join("\n")
         }
         flash[:error] = t('eds.errors.connection')
       end
