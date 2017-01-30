@@ -123,6 +123,7 @@ module BlacklightEds::ArticlesControllerBehavior
     #rename parameters to expected names
     #action and query-1 were renamed due to Rails and Blacklight conventions respectively
     eds_options['action'] = eds_options.delete 'eds_action'
+    eds_options['expander'] = 'fulltext' # expand query to fulltext and bring back more results
     if eds_options.has_key? 'q'
       eds_options['query-1'] = query_fragment 'AND', options['search_field'], eds_options.delete('q').gsub(/[,:]/, ' ')
     end
@@ -149,6 +150,7 @@ module BlacklightEds::ArticlesControllerBehavior
     end_date = Date.parse(options['publication_date_end']).strftime('%Y%m31') rescue nil
     search_query["query-#{search_query.size+1}"] = "AND,DT:#{start_date}-#{end_date}" if !start_date.blank? and !end_date.blank?
     search_query['sort'] = options['sort'] unless options['sort'].blank?
+    search_query['expander'] = 'fulltext'
     search_query.to_query
   end
 
