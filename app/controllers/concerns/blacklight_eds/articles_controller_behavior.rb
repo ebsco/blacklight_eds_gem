@@ -290,7 +290,7 @@ module BlacklightEds::ArticlesControllerBehavior
   end
 
   def update_results_in_session results
-    #prevent :info from overloading the session by removing it
+    # prevent eds_session[:info] from overloading the session by removing it
     session[:eds].delete :info
 
     eds_session[:results] = results.fetch('SearchResult', {}).fetch('Data', {}).fetch('Records', []).map { |r|
