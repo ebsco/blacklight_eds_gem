@@ -6,6 +6,8 @@ module BlacklightEds::ArticlesSearchContext
   end
 
   def eds_session
+    # prevent eds_session[:info] from overloading the session by removing it
+    session[:eds].delete :info
     session[:eds] ||= {}
   end
 end
