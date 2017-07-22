@@ -128,7 +128,7 @@ module BlacklightEds::ArticlesControllerBehavior
       eds_options['query-1'] = query_fragment 'AND', options['search_field'], eds_options.delete('q').gsub(/[,:]/, ' ')
     end
 
-    searchquery = eds_options.to_query
+    searchquery = eds_options.permit!.to_h.to_query
     # , : ( ) - decoding expected punctuation
     searchquery = searchquery.gsub('limiter%5B%5D', 'limiter')
                       .gsub('facetfilter%5B%5D', 'facetfilter')
