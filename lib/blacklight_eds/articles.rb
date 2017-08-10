@@ -29,10 +29,10 @@ module BlacklightEds::Articles
     end
 
     # catalog search results
-    (@response, @document_list) = get_search_results
+    (@response, @document_list) = search_results params # get_search_results
 
     respond_to do |format|
-      format.html { preferred_view }
+      format.html { } # preferred_view }
       format.rss  { render :layout => false }
       format.atom { render :layout => false }
       format.json do

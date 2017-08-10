@@ -142,7 +142,7 @@ module BlacklightEds::ArticlesControllerBehavior
   def advanced_generate_api_query(options)
     query_options = options.select { |key, val| ADVANCED_KEYS.include? key.to_sym and not val.blank?}
     search_query = {}
-    query_options.each_with_index { |pair, i|
+    query_options.permit!.to_h.each_with_index { |pair, i|
       search_query["query-#{i+1}"] = query_fragment options['op'] || 'AND', pair[0], pair[1].to_s.gsub(/[,:]/, ' ')
     }
     # publication dates
@@ -165,8 +165,14 @@ module BlacklightEds::ArticlesControllerBehavior
 
     # force turn off highlight to fix eds gem bug
     apiquery.gsub!("highlight=y", "highlight=n")
+    esk = eds_session_key
+    eat = eds_auth_token
 
-    results = eds_connection.search(apiquery, eds_session_key, eds_auth_token, :json).to_hash
+    conn = eds_connection
+
+    search_result = conn.search(apiquery, esk, eat, :json)
+
+    results = search_result.to_hash
 
     #update session_key if new one was generated in the call
     check_session_currency
@@ -289,7 +295,7 @@ module BlacklightEds::ArticlesControllerBehavior
         if params[:eds_action] and params[:eds_action].start_with? 'removequery'
           query_params.size > 1
         else
-          query_params.size > 0
+          not query_params.empty?
         end
       end
     end
