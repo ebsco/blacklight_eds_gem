@@ -165,11 +165,9 @@ module BlacklightEds::ArticlesControllerBehavior
 
     # force turn off highlight to fix eds gem bug
     apiquery.gsub!("highlight=y", "highlight=n")
+    conn = eds_connection
     esk = eds_session_key
     eat = eds_auth_token
-
-    conn = eds_connection
-
     search_result = conn.search(apiquery, esk, eat, :json)
 
     results = search_result.to_hash
