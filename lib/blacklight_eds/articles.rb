@@ -112,8 +112,10 @@ module BlacklightEds::Articles
   end
 
   def fulltext
-    if params[:fulltext_type] 
+    if params[:fulltext_type] and params[:fulltext_type].start_with? 'ebook'
       fulltext_type = params[:fulltext_type]
+    elsif params[:fulltext_type] == 'pdflink'
+      fulltext_type = 'ebook-pdf'
     else
       fulltext_type = ''
     end
