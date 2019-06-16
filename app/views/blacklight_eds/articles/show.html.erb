@@ -54,7 +54,7 @@
                 <% if has_full_text_on_screen?(@record) %>
                     <a name="fulltext"></a>
                     <dt class="blacklight-subject">Full Text:</dt>
-                    <% if eds_user_signed_in? %>
+                    <% if eds_user_signed_in? or ip_in_range? %>
                         <dd class="blacklight-abstract"><%= show_full_text_on_screen(@record).html_safe %></dd>
                     <% else %>
                         <dd class="blacklight-abstract"><%= link_to "Please log in to display full-text.", new_user_session_path %></dd>
@@ -77,7 +77,7 @@
           <br />
           <%= show_pubtype(@record) %>
         </div>
-        <% if eds_user_signed_in? %>
+        <% if eds_user_signed_in? or ip_in_range %>
             <%= render partial: 'fulltext_links', locals: { delimiter: '<br/>'.html_safe, record: @record } %>
         <% else %>
             <dt class="blacklight-fulltext"><%= link_to "Please log in to see full-text options", new_user_session_path %></dt>

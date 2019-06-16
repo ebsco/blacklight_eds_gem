@@ -49,7 +49,7 @@
             <dd class="blacklight-abstract"><%= show_subjects(result) %></dd>
         <% end %>
 
-        <% if eds_user_signed_in? %>
+        <% if eds_user_signed_in? or ip_in_range? %>
             <%= render partial: 'fulltext_links', locals: { delimiter: ' ', record: result } %>
         <% else %>
             <dt class="blacklight-fulltext">Full Text</dt>
