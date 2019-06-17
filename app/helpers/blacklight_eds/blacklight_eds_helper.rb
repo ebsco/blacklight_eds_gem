@@ -803,11 +803,17 @@ module BlacklightEds::BlacklightEdsHelper
     user_signed_in?
   end
 
-  def ip_in_range? ip
+  def ip_in_range?(ip)
+    logger.tagged('EDS') {
+      logger.info "Check if IP is in range: #{ip}"
+    }
     profiles = Rails.application.config.eds_profiles
     profile = 'default' # assumes only one campues. TODO: Fix this
     eds_profile = profiles.fetch(profile, profiles.values[0])
     eds_profile.fetch('ip_ranges', []).each do |range|
+      logger.tagged('EDS') {
+        logger.info "Checking ip: #{range}"
+      }
       if range.include? ip
         return true
       end
