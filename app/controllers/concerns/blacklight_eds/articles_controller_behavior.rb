@@ -32,7 +32,7 @@ module BlacklightEds::ArticlesControllerBehavior
           # creates EDS API connection object, initializing it with application login credentials
           connection = EDSApi::ConnectionHandler.new(2)
           account = eds_profile profile
-          is_guest = eds_user_signed_in? ? 'n' : 'y'
+          is_guest = (eds_user_signed_in? or ip_in_range?(request.remote_ip)) ? 'n' : 'y'
           connection.uid_init(account['username'], account['password'], account['profile'], is_guest)
           Rails.cache.delete_matched('eds_auth_token/*') # clean up the cache
           eds_session.delete :session_key
@@ -57,7 +57,7 @@ module BlacklightEds::ArticlesControllerBehavior
 
   # Returns EDS auth_token. It's stored in Rails Low Level Cache, and expires in every 30 minutes
   def eds_auth_token
-    cache_key = eds_user_signed_in? ? 'eds_auth_token/user' : 'eds_auth_token/guest'
+    cache_key = (eds_user_signed_in? or ip_in_range?(request.remote_ip)) ? 'eds_auth_token/user' : 'eds_auth_token/guest'
     auth_token = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
       eds_connection.uid_authenticate :json
       eds_connection.show_auth_token
