@@ -804,18 +804,6 @@ module BlacklightEds::BlacklightEdsHelper
     user_signed_in?
   end
 
-  def ip_in_range?(ip)
-    profiles = Rails.application.config.eds_profiles
-    profile = 'default' # assumes only one campues. TODO: Fix this
-    eds_profile = profiles.fetch(profile, profiles.values[0])
-    eds_profile.fetch('ip_ranges', []).each do |range|
-      if IPAddr.new(range).include? ip
-        return true
-      end
-    end
-    return false
-  end
-
   def eds_current_user
     current_user
   end

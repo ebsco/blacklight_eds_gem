@@ -4,7 +4,7 @@ module BlacklightEds::ArticlesControllerBehavior
   extend ActiveSupport::Concern
 
   included do
-    helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links, :eds_has_search_parameters?
+    helper_method :eds_num_limiters, :eds_info, :eds_fulltext_links, :eds_has_search_parameters?, :ip_in_range?
   end
 
   ADVANCED_KEYS = { author: 'AU', title: 'TI', subject: 'SU', journal: 'SO', abstract: 'AB', alltext: 'TX' }
@@ -311,6 +311,18 @@ module BlacklightEds::ArticlesControllerBehavior
     }
     eds_session[:query_string] = results.fetch('SearchRequestGet', {}).fetch('QueryString', nil)
     eds_session[:total_hits] = results.fetch('SearchResult', {}).fetch('Statistics', {}).fetch('TotalHits', -1)
+  end
+
+  def ip_in_range?(ip)
+    profiles = Rails.application.config.eds_profiles
+    profile = 'default' # assumes only one campues. TODO: Fix this
+    eds_profile = profiles.fetch(profile, profiles.values[0])
+    eds_profile.fetch('ip_ranges', []).each do |range|
+      if IPAddr.new(range).include? ip
+        return true
+      end
+    end
+    return false
   end
 
 end
