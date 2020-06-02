@@ -1,3 +1,7 @@
+# Deprication
+
+This repo is no longer supported.  A Ruby interface to the EDS API that is supported: https://github.com/ebsco/edsapi-ruby  - this repo flattens the EDS API response and provides a Solr interface to the API as well, making it more useful for Blacklight.  
+
 # BlacklightEds
 
 ## Installation
